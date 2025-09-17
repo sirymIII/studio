@@ -3,73 +3,73 @@
     {
       "id": "hero-background",
       "description": "A beautiful landscape in Nigeria, possibly showing mountains and lush greenery.",
-      "imageUrl": "https://picsum.photos/seed/tournaija/1920/1080",
+      "imageUrl": "https://images.unsplash.com/photo-1596568402122-a745e3952b6d?q=80&w=1920&auto=format&fit=crop",
       "imageHint": "nigeria landscape"
     },
     {
       "id": "dest-yankari",
       "description": "Elephants at Yankari National Park.",
-      "imageUrl": "https://picsum.photos/seed/yankari/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1628588207797-158296d85919?q=80&w=600&auto=format&fit=crop",
       "imageHint": "national park safari"
     },
     {
       "id": "dest-obudu",
       "description": "Cable car at Obudu Mountain Resort.",
-      "imageUrl": "https://picsum.photos/seed/obudu/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1617293541278-854e4142f311?q=80&w=600&auto=format&fit=crop",
       "imageHint": "mountain resort cablecar"
     },
     {
       "id": "dest-zuma",
       "description": "The imposing Zuma Rock.",
-      "imageUrl": "https://picsum.photos/seed/zuma/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1605634591452-96373199b244?q=80&w=600&auto=format&fit=crop",
       "imageHint": "large monolith rock"
     },
     {
       "id": "dest-idanre",
       "description": "A view from the top of Idanre Hills.",
-      "imageUrl": "https://picsum.photos/seed/idanre/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1633519502573-30589d843818?q=80&w=600&auto=format&fit=crop",
       "imageHint": "ancient hills settlement"
     },
     {
       "id": "dest-lekki",
       "description": "Canopy walk at Lekki Conservation Centre.",
-      "imageUrl": "https://picsum.photos/seed/lekki/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1621929424190-a372793134f9?q=80&w=600&auto=format&fit=crop",
       "imageHint": "canopy walk nature"
     },
     {
       "id": "dest-olumo",
       "description": "A view from Olumo Rock.",
-      "imageUrl": "https://picsum.photos/seed/olumo/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1624558364124-7853b0a70176?q=80&w=600&auto=format&fit=crop",
       "imageHint": "ancient rock fortress"
     },
     {
       "id": "dest-kainji",
       "description": "Wildlife at Kainji National Park.",
-      "imageUrl": "https://picsum.photos/seed/kainji/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1549491761-4f67644a4f80?q=80&w=600&auto=format&fit=crop",
       "imageHint": "wildlife park lake"
     },
     {
       "id": "dest-erin-ijesha",
       "description": "Waterfalls at Erin-Ijesha.",
-      "imageUrl": "https://picsum.photos/seed/erin-ijesha/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1596707882236-93a0b5c1920b?q=80&w=600&auto=format&fit=crop",
       "imageHint": "cascading waterfalls nature"
     },
     {
       "id": "hotel-transcorp",
       "description": "The exterior of Transcorp Hilton in Abuja.",
-      "imageUrl": "https://picsum.photos/seed/transcorp/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600&auto=format&fit=crop",
       "imageHint": "luxury hotel exterior"
     },
     {
       "id": "hotel-eko",
       "description": "The modern building of Eko Hotel & Suites.",
-      "imageUrl": "https://picsum.photos/seed/eko/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1542314831-068cd1dbb5eb?q=80&w=600&auto=format&fit=crop",
       "imageHint": "modern hotel building"
     },
     {
       "id": "hotel-nike-lake",
       "description": "A view of Nike Lake Resort by the water.",
-      "imageUrl": "https://picsum.photos/seed/nike-lake/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=600&auto=format&fit=crop",
       "imageHint": "resort by lake"
     }
   ]

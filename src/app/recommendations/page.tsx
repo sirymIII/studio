@@ -77,7 +77,7 @@ export default function RecommendationsPage() {
                 </div>
                 <div className="relative hidden h-full min-h-[300px] w-full overflow-hidden rounded-r-lg md:block">
                   <Image
-                    src="https://picsum.photos/seed/recommend/800/600"
+                    src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop"
                     alt="Map of Nigeria"
                     fill
                     className="object-cover"
