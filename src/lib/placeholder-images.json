@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "A beautiful landscape in Nigeria, possibly showing mountains and lush greenery.",
+      "imageUrl": "https://picsum.photos/seed/tournaija/1920/1080",
+      "imageHint": "nigeria landscape"
+    },
+    {
+      "id": "dest-yankari",
+      "description": "Elephants at Yankari National Park.",
+      "imageUrl": "https://picsum.photos/seed/yankari/600/400",
+      "imageHint": "national park safari"
+    },
+    {
+      "id": "dest-obudu",
+      "description": "Cable car at Obudu Mountain Resort.",
+      "imageUrl": "https://picsum.photos/seed/obudu/600/400",
+      "imageHint": "mountain resort cablecar"
+    },
+    {
+      "id": "dest-zuma",
+      "description": "The imposing Zuma Rock.",
+      "imageUrl": "https://picsum.photos/seed/zuma/600/400",
+      "imageHint": "large monolith rock"
+    },
+    {
+      "id": "dest-idanre",
+      "description": "A view from the top of Idanre Hills.",
+      "imageUrl": "https://picsum.photos/seed/idanre/600/400",
+      "imageHint": "ancient hills settlement"
+    }
+  ]
 }
