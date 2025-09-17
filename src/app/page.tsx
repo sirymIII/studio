@@ -31,6 +31,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Hotels } from '@/components/hotels';
 import { Chatbot } from '@/components/chatbot';
+import Link from 'next/link';
 
 export default function Home() {
   const heroImage = placeholderImages.placeholderImages.find(
@@ -61,8 +62,8 @@ export default function Home() {
               Your AI-powered guide to the unforgettable landscapes, cultures,
               and adventures across Nigeria.
             </p>
-            <Button size="lg" className="mt-8">
-              Explore Destinations
+            <Button size="lg" className="mt-8" asChild>
+              <Link href="/destinations">Explore Destinations</Link>
             </Button>
           </div>
         </section>
@@ -127,121 +128,6 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </section>
-
-        <section id="featured-destinations" className="bg-muted py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="mx-auto mb-12 max-w-3xl text-center">
-              <h2 className="font-headline text-3xl font-bold md:text-4xl">
-                Featured Destinations
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Get inspired by some of Nigeria's most breathtaking spots.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredDestinations.map((dest) => {
-                const img = placeholderImages.placeholderImages.find(
-                  (p) => p.id === dest.image.id
-                );
-                return (
-                  <Card key={dest.id} className="overflow-hidden">
-                    <div className="relative h-48 w-full">
-                      {img && (
-                        <Image
-                          src={img.imageUrl}
-                          alt={dest.name}
-                          fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
-                          data-ai-hint={img.imageHint}
-                        />
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-headline text-lg font-bold">
-                        {dest.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {dest.state}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <Hotels />
-
-        <section id="recommendations" className="py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <Card className="bg-muted">
-              <div className="grid items-center gap-8 md:grid-cols-2">
-                <div className="p-8 md:p-12">
-                  <h2 className="font-headline text-3xl font-bold md:text-4xl">
-                    Find Your Perfect Getaway
-                  </h2>
-                  <p className="mt-4 text-lg text-muted-foreground">
-                    Let our AI help you find the ideal destination based on your
-                    preferences.
-                  </p>
-                  <form className="mt-8 space-y-4">
-                    <div className="space-y-1">
-                      <label htmlFor="city">Your City</label>
-                      <Input id="city" placeholder="e.g., Lagos" />
-                    </div>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <div className="space-y-1">
-                        <label htmlFor="budget">Budget</label>
-                        <Select>
-                          <SelectTrigger id="budget">
-                            <SelectValue placeholder="Select budget" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-1">
-                        <label htmlFor="interests">Interests</label>
-                        <Select>
-                          <SelectTrigger id="interests">
-                            <SelectValue placeholder="Select interests" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="history">
-                              Historical Sites
-                            </SelectItem>
-                            <SelectItem value="nature">
-                              Natural Beauty
-                            </SelectItem>
-                            <SelectItem value="culture">
-                              Cultural Experiences
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <Button type="submit" className="w-full sm:w-auto">
-                      Get Recommendations
-                    </Button>
-                  </form>
-                </div>
-                <div className="relative hidden h-full min-h-[300px] w-full overflow-hidden rounded-r-lg md:block">
-                  <Image
-                    src="https://picsum.photos/seed/recommend/800/600"
-                    alt="Map of Nigeria"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="nigeria map"
-                  />
-                </div>
-              </div>
-            </Card>
           </div>
         </section>
         
