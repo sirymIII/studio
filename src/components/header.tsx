@@ -24,6 +24,12 @@ export function Header() {
           >
             Hotels
           </Link>
+           <Link
+            href="/transport"
+            className="transition-colors hover:text-primary"
+          >
+            Transport
+          </Link>
           <Link
             href="/recommendations"
             className="transition-colors hover:text-primary"
