@@ -4,7 +4,7 @@ import { Logo } from './icons';
 
 export function Footer() {
   return (
-    <footer className="bg-secondary">
+    <footer className="bg-muted">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-2">

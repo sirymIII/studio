@@ -13,30 +13,35 @@ export function Header() {
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
           <Link
-            href="#destinations"
+            href="/#featured-destinations"
             className="transition-colors hover:text-primary"
           >
             Destinations
           </Link>
           <Link
-            href="#hotels"
+            href="/#hotels"
             className="transition-colors hover:text-primary"
           >
             Hotels
           </Link>
           <Link
-            href="#recommendations"
+            href="/#recommendations"
             className="transition-colors hover:text-primary"
           >
             Recommendations
           </Link>
-          <Link href="#features" className="transition-colors hover:text-primary">
+          <Link href="/#features" className="transition-colors hover:text-primary">
             Features
+          </Link>
+          <Link href="/admin" className="transition-colors hover:text-primary">
+            Admin
           </Link>
         </nav>
         <div className="flex items-center gap-2">
           <Button variant="ghost">Sign In</Button>
-          <Button>Sign Up</Button>
+          <Button asChild>
+            <Link href="/signup">Sign Up</Link>
+          </Button>
         </div>
       </div>
     </header>

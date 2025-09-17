@@ -130,7 +130,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="featured-destinations" className="bg-secondary py-16 md:py-24">
+        <section id="featured-destinations" className="bg-muted py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto mb-12 max-w-3xl text-center">
               <h2 className="font-headline text-3xl font-bold md:text-4xl">
@@ -177,7 +177,7 @@ export default function Home() {
 
         <section id="recommendations" className="py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <Card className="bg-secondary">
+            <Card className="bg-muted">
               <div className="grid items-center gap-8 md:grid-cols-2">
                 <div className="p-8 md:p-12">
                   <h2 className="font-headline text-3xl font-bold md:text-4xl">
