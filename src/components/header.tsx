@@ -44,7 +44,9 @@ export function Header() {
           </Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Button variant="ghost">Sign In</Button>
+          <Button variant="ghost" asChild>
+            <Link href="/signin">Sign In</Link>
+          </Button>
           <Button asChild>
             <Link href="/signup">Sign Up</Link>
           </Button>
