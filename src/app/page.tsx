@@ -29,6 +29,8 @@ import { featuredDestinations } from '@/data/destinations';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { Hotels } from '@/components/hotels';
+import { Chatbot } from '@/components/chatbot';
 
 export default function Home() {
   const heroImage = placeholderImages.placeholderImages.find(
@@ -171,6 +173,8 @@ export default function Home() {
           </div>
         </section>
 
+        <Hotels />
+
         <section id="recommendations" className="py-16 md:py-24">
           <div className="container mx-auto px-4">
             <Card className="bg-secondary">
@@ -240,6 +244,9 @@ export default function Home() {
             </Card>
           </div>
         </section>
+        
+        <Chatbot />
+
       </main>
       <Footer />
     </div>

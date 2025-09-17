@@ -29,6 +29,24 @@
       "description": "A view from the top of Idanre Hills.",
       "imageUrl": "https://picsum.photos/seed/idanre/600/400",
       "imageHint": "ancient hills settlement"
+    },
+    {
+      "id": "hotel-transcorp",
+      "description": "The exterior of Transcorp Hilton in Abuja.",
+      "imageUrl": "https://picsum.photos/seed/transcorp/600/400",
+      "imageHint": "luxury hotel exterior"
+    },
+    {
+      "id": "hotel-eko",
+      "description": "The modern building of Eko Hotel & Suites.",
+      "imageUrl": "https://picsum.photos/seed/eko/600/400",
+      "imageHint": "modern hotel building"
+    },
+    {
+      "id": "hotel-nike-lake",
+      "description": "A view of Nike Lake Resort by the water.",
+      "imageUrl": "https://picsum.photos/seed/nike-lake/600/400",
+      "imageHint": "resort by lake"
     }
   ]
 }

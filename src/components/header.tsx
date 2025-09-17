@@ -19,6 +19,12 @@ export function Header() {
             Destinations
           </Link>
           <Link
+            href="#hotels"
+            className="transition-colors hover:text-primary"
+          >
+            Hotels
+          </Link>
+          <Link
             href="#recommendations"
             className="transition-colors hover:text-primary"
           >

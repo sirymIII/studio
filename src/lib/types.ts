@@ -7,3 +7,15 @@ export type Destination = {
     hint: string;
   };
 };
+
+export type Hotel = {
+  id: string;
+  name: string;
+  location: string;
+  price: number;
+  rating: number;
+  image: {
+    id: string;
+    hint: string;
+  };
+};
