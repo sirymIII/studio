@@ -31,6 +31,30 @@
       "imageHint": "ancient hills settlement"
     },
     {
+      "id": "dest-lekki",
+      "description": "Canopy walk at Lekki Conservation Centre.",
+      "imageUrl": "https://picsum.photos/seed/lekki/600/400",
+      "imageHint": "canopy walk nature"
+    },
+    {
+      "id": "dest-olumo",
+      "description": "A view from Olumo Rock.",
+      "imageUrl": "https://picsum.photos/seed/olumo/600/400",
+      "imageHint": "ancient rock fortress"
+    },
+    {
+      "id": "dest-kainji",
+      "description": "Wildlife at Kainji National Park.",
+      "imageUrl": "https://picsum.photos/seed/kainji/600/400",
+      "imageHint": "wildlife park lake"
+    },
+    {
+      "id": "dest-erin-ijesha",
+      "description": "Waterfalls at Erin-Ijesha.",
+      "imageUrl": "https://picsum.photos/seed/erin-ijesha/600/400",
+      "imageHint": "cascading waterfalls nature"
+    },
+    {
       "id": "hotel-transcorp",
       "description": "The exterior of Transcorp Hilton in Abuja.",
       "imageUrl": "https://picsum.photos/seed/transcorp/600/400",

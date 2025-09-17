@@ -37,4 +37,40 @@ export const featuredDestinations: Destination[] = [
       hint: 'ancient hills settlement',
     },
   },
+  {
+    id: '5',
+    name: 'Lekki Conservation Centre',
+    state: 'Lagos',
+    image: {
+      id: 'dest-lekki',
+      hint: 'canopy walk nature',
+    },
+  },
+  {
+    id: '6',
+    name: 'Olumo Rock',
+    state: 'Ogun',
+    image: {
+      id: 'dest-olumo',
+      hint: 'ancient rock fortress',
+    },
+  },
+  {
+    id: '7',
+    name: 'Kainji National Park',
+    state: 'Niger',
+    image: {
+      id: 'dest-kainji',
+      hint: 'wildlife park lake',
+    },
+  },
+  {
+    id: '8',
+    name: 'Erin-Ijesha Waterfalls',
+    state: 'Osun',
+    image: {
+      id: 'dest-erin-ijesha',
+      hint: 'cascading waterfalls nature',
+    },
+  },
 ];
