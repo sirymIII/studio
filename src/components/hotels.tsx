@@ -4,15 +4,12 @@ import { Star } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { featuredHotels } from '@/data/hotels';
 import placeholderImages from '@/lib/placeholder-images.json';
+import type { Hotel } from '@/lib/types';
 
-export function Hotels() {
+export function Hotels({ hotels }: { hotels: Hotel[] }) {
   return (
     <section id="hotels" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -25,7 +22,7 @@ export function Hotels() {
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredHotels.map((hotel) => {
+          {hotels.map((hotel) => {
             const img = placeholderImages.placeholderImages.find(
               (p) => p.id === hotel.image.id
             );

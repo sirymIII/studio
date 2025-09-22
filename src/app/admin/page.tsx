@@ -1,3 +1,4 @@
+import { getStats } from '@/services/firestore';
 import {
   Card,
   CardContent,
@@ -6,7 +7,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const stats = await getStats();
+
   return (
     <div>
       <h1 className="text-4xl font-bold font-headline mb-8">Admin Dashboard</h1>
@@ -17,7 +20,7 @@ export default function AdminDashboard() {
             <CardDescription>Number of locations managed</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">12</p>
+            <p className="text-4xl font-bold">{stats.destinations}</p>
           </CardContent>
         </Card>
         <Card>
@@ -26,7 +29,7 @@ export default function AdminDashboard() {
             <CardDescription>Number of hotels listed</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">25</p>
+            <p className="text-4xl font-bold">{stats.hotels}</p>
           </CardContent>
         </Card>
         <Card>
@@ -35,7 +38,7 @@ export default function AdminDashboard() {
             <CardDescription>Number of registered users</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">1,234</p>
+            <p className="text-4xl font-bold">{stats.users}</p>
           </CardContent>
         </Card>
       </div>

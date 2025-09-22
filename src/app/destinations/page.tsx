@@ -3,13 +3,14 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-
-import { featuredDestinations } from '@/data/destinations';
+import { getDestinations } from '@/services/firestore';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
-export default function DestinationsPage() {
+export default async function DestinationsPage() {
+  const featuredDestinations = await getDestinations();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
