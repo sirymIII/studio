@@ -1,11 +1,12 @@
 'use server';
 
 import type { Destination, Hotel } from '@/lib/types';
-import admin from '@/lib/firebase-admin';
+import { getFirestore, getAuth } from '@/lib/firebase-admin';
 import { featuredDestinations } from '@/data/destinations';
 import { featuredHotels } from '@/data/hotels';
 
-const db = admin.firestore();
+const db = getFirestore();
+const auth = getAuth();
 
 export async function getDestinations(): Promise<Destination[]> {
   try {
@@ -71,7 +72,7 @@ export async function getStats() {
     try {
         const destinationsSnap = await db.collection('destinations').count().get();
         const hotelsSnap = await db.collection('hotels').count().get();
-        const usersSnap = await admin.auth().listUsers();
+        const usersSnap = await auth.listUsers();
 
         return {
             destinations: destinationsSnap.data().count,
