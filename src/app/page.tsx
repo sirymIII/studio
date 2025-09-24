@@ -42,32 +42,6 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[60vh] min-h-[400px] w-full">
-          {heroImage && (
-            <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
-              fill
-              className="object-cover"
-              data-ai-hint={heroImage.imageHint}
-              priority
-            />
-          )}
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
-            <h1 className="font-headline text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-              Discover Nigeria's Hidden Gems
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg text-primary-foreground/90 md:text-xl">
-              Your AI-powered guide to the unforgettable landscapes, cultures,
-              and adventures across Nigeria.
-            </p>
-            <Button size="lg" className="mt-8" asChild>
-              <Link href="/destinations">Explore Destinations</Link>
-            </Button>
-          </div>
-        </section>
-
         <section id="features" className="py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-3xl text-center">
@@ -133,6 +107,31 @@ export default function Home() {
         
         <Chatbot />
 
+        <section className="relative h-[60vh] min-h-[400px] w-full">
+          {heroImage && (
+            <Image
+              src={heroImage.imageUrl}
+              alt={heroImage.description}
+              fill
+              className="object-cover"
+              data-ai-hint={heroImage.imageHint}
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
+            <h1 className="font-headline text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+              Discover Nigeria's Hidden Gems
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg text-primary-foreground/90 md:text-xl">
+              Your AI-powered guide to the unforgettable landscapes, cultures,
+              and adventures across Nigeria.
+            </p>
+            <Button size="lg" className="mt-8" asChild>
+              <Link href="/destinations">Explore Destinations</Link>
+            </Button>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
