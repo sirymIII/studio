@@ -26,9 +26,6 @@ export function Footer() {
             </Link>
           </div>
         </div>
-        <div className="mt-4 text-center text-xs text-muted-foreground">
-          <p>This is a footnote. Crafted with care by a budding developer.</p>
-        </div>
       </div>
     </footer>
   );
