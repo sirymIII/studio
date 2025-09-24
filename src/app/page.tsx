@@ -130,6 +130,19 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section className="py-16 md:py-24 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="font-headline text-3xl font-bold md:text-4xl">
+                Discover Nigeria – The Heartbeat of Africa
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                From golden beaches and breathtaking waterfalls to colorful festivals and vibrant cities, Nigeria offers an unforgettable blend of adventure, culture, and natural beauty. Whether you’re exploring ancient heritage sites, enjoying rich cuisine, or experiencing warm hospitality, Nigeria is a destination that stays with you forever.
+              </p>
+            </div>
+          </div>
+        </section>
         
         <Chatbot />
 
