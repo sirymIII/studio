@@ -36,8 +36,8 @@ export function Header() {
           >
             Recommendations
           </Link>
-          <Link href="/#features" className="transition-colors hover:text-primary">
-            Features
+          <Link href="/about" className="transition-colors hover:text-primary">
+            About
           </Link>
           <Link href="/admin" className="transition-colors hover:text-primary">
             Admin
