@@ -1,90 +1,63 @@
-'use server';
-
+'use client';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, getCountFromServer } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import type { Destination, Hotel } from '@/lib/types';
-import { getFirestore, getAuth } from '@/lib/firebase-admin';
-import { featuredDestinations } from '@/data/destinations';
-import { featuredHotels } from '@/data/hotels';
 
-const db = getFirestore();
-const auth = getAuth();
-
-export async function getDestinations(): Promise<Destination[]> {
-  try {
-    const destinationsRef = db.collection('destinations');
-    const snapshot = await destinationsRef.get();
-
-    if (snapshot.empty) {
-      // If the collection is empty, seed it with initial data
-      console.log('Destinations collection is empty. Seeding data...');
-      const batch = db.batch();
-      featuredDestinations.forEach(dest => {
-        const docRef = db.collection('destinations').doc(dest.id);
-        batch.set(docRef, dest);
-      });
-      await batch.commit();
-      console.log('Destinations seeded successfully.');
-      return featuredDestinations;
-    }
-
-    const destinations: Destination[] = [];
-    snapshot.forEach(doc => {
-      destinations.push(doc.data() as Destination);
-    });
-    return destinations;
-  } catch (error) {
-    console.error('Error fetching destinations:', error);
-    // Fallback to static data in case of an error
-    return featuredDestinations;
-  }
+export function useDestinations() {
+  const firestore = useFirestore();
+  const destinationsQuery = useMemoFirebase(
+    () => (firestore ? collection(firestore, 'destinations') : null),
+    [firestore]
+  );
+  return useCollection<Destination>(destinationsQuery);
 }
 
-export async function getHotels(): Promise<Hotel[]> {
-  try {
-    const hotelsRef = db.collection('hotels');
-    const snapshot = await hotelsRef.get();
-
-     if (snapshot.empty) {
-      // If the collection is empty, seed it with initial data
-      console.log('Hotels collection is empty. Seeding data...');
-      const batch = db.batch();
-      featuredHotels.forEach(hotel => {
-        const docRef = db.collection('hotels').doc(hotel.id);
-        batch.set(docRef, hotel);
-      });
-      await batch.commit();
-      console.log('Hotels seeded successfully.');
-      return featuredHotels;
-    }
-
-    const hotels: Hotel[] = [];
-    snapshot.forEach(doc => {
-      hotels.push(doc.data() as Hotel);
-    });
-    return hotels;
-  } catch (error) {
-    console.error('Error fetching hotels:', error);
-     // Fallback to static data in case of an error
-    return featuredHotels;
-  }
+export function useHotels() {
+  const firestore = useFirestore();
+  const hotelsQuery = useMemoFirebase(
+    () => (firestore ? collection(firestore, 'hotels') : null),
+    [firestore]
+  );
+  return useCollection<Hotel>(hotelsQuery);
 }
 
-export async function getStats() {
-    try {
-        const destinationsSnap = await db.collection('destinations').count().get();
-        const hotelsSnap = await db.collection('hotels').count().get();
-        const usersSnap = await auth.listUsers();
+export function useStats() {
+  const firestore = useFirestore();
+  const [stats, setStats] = useState({
+    destinations: 0,
+    hotels: 0,
+    users: 0, // Users count from auth is not directly available on client, needs a secure backend call.
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-        return {
-            destinations: destinationsSnap.data().count,
-            hotels: hotelsSnap.data().count,
-            users: usersSnap.users.length,
-        }
-    } catch (error) {
-        console.error("Error fetching stats: ", error);
-        return {
-            destinations: 0,
-            hotels: 0,
-            users: 0,
-        }
-    }
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchStats = async () => {
+      setIsLoading(true);
+      try {
+        const destinationsCol = collection(firestore, 'destinations');
+        const hotelsCol = collection(firestore, 'hotels');
+        
+        const destinationsSnap = await getCountFromServer(destinationsCol);
+        const hotelsSnap = await getCountFromServer(hotelsCol);
+
+        setStats({
+          destinations: destinationsSnap.data().count,
+          hotels: hotelsSnap.data().count,
+          users: 0, // Placeholder
+        });
+      } catch (e: any) {
+        setError(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [firestore]);
+
+  return { stats, isLoading, error };
 }

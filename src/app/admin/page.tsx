@@ -1,4 +1,5 @@
-import { getStats } from '@/services/firestore';
+'use client';
+import { useStats } from '@/services/firestore';
 import {
   Card,
   CardContent,
@@ -6,9 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function AdminDashboard() {
-  const stats = await getStats();
+export default function AdminDashboard() {
+  const { stats, isLoading } = useStats();
 
   return (
     <div>
@@ -20,7 +22,7 @@ export default async function AdminDashboard() {
             <CardDescription>Number of locations managed</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{stats.destinations}</p>
+            {isLoading ? <Skeleton className="h-10 w-20" /> : <p className="text-4xl font-bold">{stats.destinations}</p>}
           </CardContent>
         </Card>
         <Card>
@@ -29,13 +31,13 @@ export default async function AdminDashboard() {
             <CardDescription>Number of hotels listed</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{stats.hotels}</p>
+             {isLoading ? <Skeleton className="h-10 w-20" /> : <p className="text-4xl font-bold">{stats.hotels}</p>}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Total Users</CardTitle>
-            <CardDescription>Number of registered users</CardDescription>
+            <CardDescription>Number of registered users (requires backend implementation)</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{stats.users}</p>

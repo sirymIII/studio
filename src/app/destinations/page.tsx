@@ -1,15 +1,17 @@
+'use client';
 import Image from 'next/image';
 import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-import { getDestinations } from '@/services/firestore';
+import { useDestinations } from '@/services/firestore';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function DestinationsPage() {
-  const featuredDestinations = await getDestinations();
+export default function DestinationsPage() {
+  const { data: featuredDestinations, isLoading } = useDestinations();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,7 +28,16 @@ export default async function DestinationsPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredDestinations.map((dest) => {
+              {isLoading && Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i} className="overflow-hidden">
+                  <Skeleton className="h-48 w-full" />
+                  <CardContent className="p-4">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="mt-2 h-4 w-1/2" />
+                  </CardContent>
+                </Card>
+              ))}
+              {featuredDestinations?.map((dest) => {
                 const img = placeholderImages.placeholderImages.find(
                   (p) => p.id === dest.image.id
                 );
