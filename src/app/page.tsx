@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import {
   Heart,
@@ -25,18 +26,20 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
-import { featuredDestinations } from '@/data/destinations';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Hotels } from '@/components/hotels';
 import { Chatbot } from '@/components/chatbot';
 import Link from 'next/link';
+import { useHotels } from '@/services/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const heroImage = placeholderImages.placeholderImages.find(
     (img) => img.id === 'hero-background'
   );
+  const { data: hotels, isLoading } = useHotels();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -130,6 +133,33 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {isLoading && (
+          <section className="py-16 md:py-24">
+            <div className="container mx-auto px-4">
+              <div className="mx-auto mb-12 max-w-3xl text-center">
+                <h2 className="font-headline text-3xl font-bold md:text-4xl">
+                  Featured Hotels
+                </h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Comfortable and affordable places to stay across Nigeria.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <Skeleton className="h-48 w-full" />
+                    <CardContent className="p-4">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="mt-2 h-4 w-1/2" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+        {hotels && <Hotels hotels={hotels} />}
 
         <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
