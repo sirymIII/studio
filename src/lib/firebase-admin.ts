@@ -1,3 +1,4 @@
+
 import admin from 'firebase-admin';
 import { config } from 'dotenv';
 
@@ -10,21 +11,21 @@ const initializeAdminApp = () => {
 
   try {
     const serviceAccount = {
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(
+      project_id: process.env.FIREBASE_PROJECT_ID,
+      private_key: (process.env.FIREBASE_PRIVATE_KEY || '').replace(
         /\\n/g,
         '\n'
       ),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
     };
 
-    if (!serviceAccount.projectId) {
+    if (!serviceAccount.project_id) {
       throw new Error('Firebase project ID is not defined in environment variables.');
     }
 
     return admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      databaseURL: `https://${serviceAccount.projectId}.firebaseio.com`,
+      databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
     });
   } catch (error) {
     console.error('Firebase admin initialization error', error);
