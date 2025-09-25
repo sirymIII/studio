@@ -10,28 +10,27 @@ const initializeAdminApp = () => {
   }
 
   try {
-    const serviceAccount = {
-      project_id: process.env.FIREBASE_PROJECT_ID,
-      private_key: (process.env.FIREBASE_PRIVATE_KEY || '').replace(
-        /\\n/g,
-        '\n'
-      ),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    };
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
-    if (!serviceAccount.project_id) {
+    if (!projectId) {
       throw new Error('Firebase project ID is not defined in environment variables.');
     }
-    if (!serviceAccount.private_key) {
+    if (!privateKey) {
         throw new Error('Firebase private key is not defined in environment variables.');
     }
-    if (!serviceAccount.client_email) {
+    if (!clientEmail) {
         throw new Error('Firebase client email is not defined in environment variables.');
     }
 
     return admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
+      credential: admin.credential.cert({
+        project_id: projectId,
+        private_key: privateKey.replace(/\\n/g, '\n'),
+        client_email: clientEmail,
+      }),
+      databaseURL: `https://${projectId}.firebaseio.com`,
     });
   } catch (error) {
     console.error('Firebase admin initialization error', error);
