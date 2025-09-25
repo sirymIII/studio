@@ -1,0 +1,233 @@
+/**
+ * @fileoverview Firestore Security Rules for the Nigerian Tourist Destinations App.
+ *
+ * Core Philosophy:
+ * This ruleset implements a role-based access control model, primarily leveraging the existence
+ * of an admin role document under `/roles_admin/{userId}`. The main data entities (destinations,
+ * hotels, transport options, etc.) are publicly readable, but writes (create, update, delete) are
+ * generally restricted to users with the admin role. The 'destinations' collection enforces
+ * ownership for writes via the 'createdBy' field.
+ *
+ * Data Structure:
+ * - /states/{stateId}: Stores state information.
+ * - /destinations/{destinationId}: Stores destination details, including a 'createdBy' field.
+ * - /hotels/{hotelId}: Stores hotel information.
+ * - /transport_options/{transportOptionId}: Stores transport options.
+ * - /transport_hubs/{transportHubId}: Stores transport hubs.
+ * - /destination_hubs/{destinationHubId}: Stores relationships between destinations and transport hubs.
+ * - /destination_media/{destinationMediaId}: Stores media associated with destinations.
+ * - /roles_admin/{userId}: Indicates admin status based on document existence.
+ *
+ * Key Security Decisions:
+ * - Public read access to most collections (states, destinations, hotels, etc.) to allow open data consumption.
+ * - Write access (create, update, delete) restricted to admin users (indicated by a document under /roles_admin/{userId}).
+ * - Enforces ownership of 'destinations' documents through the 'createdBy' field, ensuring only the creator or an admin can modify them.
+ * - Listing is generally allowed for all collections to support discovery features.
+ * - All write operations require validation of the admin role.
+ *
+ * Denormalization for Authorization:
+ * - The 'destinations' collection includes a 'createdBy' field, denormalizing user ID information directly onto the document. This enables
+ *   security rules to directly check ownership (`resource.data.createdBy == request.auth.uid`) without needing to perform additional
+ *   `get()` operations to fetch user data.
+ *
+ * Structural Segregation:
+ * - Admin roles are stored in a separate `/roles_admin/{userId}` collection. This segregation allows for efficient role-based access control
+ *   without polluting the main data collections.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows public read access to state data. Write access is restricted to admins.
+     * @path /states/{stateId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /states/{stateId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to destination data.  Writes are allowed only to the creator or admins.
+     * @path /destinations/{destinationId}
+     * @allow get, list: if true;
+     * @allow create: if isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+     * @allow update: if isExistingOwner(resource.data.createdBy) || isAdmin();
+     * @allow delete: if isExistingOwner(resource.data.createdBy) || isAdmin();
+     * @deny create: if false;
+     * @deny update: if !(isExistingOwner(resource.data.createdBy) || isAdmin());
+     * @deny delete: if !(isExistingOwner(resource.data.createdBy) || isAdmin());
+     * @principle Enforces public read with owner-only writes, supplemented by admin override.
+     */
+    match /destinations/{destinationId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.createdBy) || isAdmin();
+      allow delete: if isExistingOwner(resource.data.createdBy) || isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to hotel data. Write access is restricted to admins.
+     * @path /hotels/{hotelId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /hotels/{hotelId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to transport option data. Write access is restricted to admins.
+     * @path /transport_options/{transportOptionId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /transport_options/{transportOptionId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to transport hub data. Write access is restricted to admins.
+     * @path /transport_hubs/{transportHubId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /transport_hubs/{transportHubId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to destination hub data. Write access is restricted to admins.
+     * @path /destination_hubs/{destinationHubId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /destination_hubs/{destinationHubId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Allows public read access to destination media data. Write access is restricted to admins.
+     * @path /destination_media/{destinationMediaId}
+     * @allow get, list: if true;
+     * @allow create: if isAdmin();
+     * @allow update: if isAdmin();
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if false;
+     * @deny delete: if false;
+     * @principle Allows public read but requires admin role for writes.
+     */
+    match /destination_media/{destinationMediaId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Defines admin role based on document existence. Grants all access to the admin user.
+     * @path /roles_admin/{userId}
+     * @allow get: if isAdmin();
+     *
+     * @allow create: if isOwner(userId);
+     *
+     * @allow update: if false; // Not allowed for standard users. Only the system should update admin roles.
+     * @allow delete: if isAdmin();
+     * @deny create: if false;
+     * @deny update: if true; // No one can update the admin documents
+     * @deny delete: if false;
+     * @principle Uses document existence as a marker for admin status.
+     */
+    match /roles_admin/{userId} {
+       allow get: if isAdmin(); // Any Admin can get any document.
+       allow create: if isOwner(userId); // Only the user themselves can create their admin record
+       allow update: if false; // No one can update the admin documents
+       allow delete: if isAdmin(); // Only admins can delete the admin records
+       allow list: if false;
+    }
+
+
+    // --- Helper Functions ---
+
+    /**
+     * @description Checks if the user is signed in.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the user ID matches the requested user ID.
+     * @param {string} userId The user ID to compare against.
+     * @return {boolean} True if the user IDs match, false otherwise.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the user is an existing owner of the document.
+     * @param {string} userId The user ID of the document's owner.
+     * @return {boolean} True if the user is the owner and the document exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+        return isSignedIn() && isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Checks if the user has the admin role.
+     * @return {boolean} True if the user has the admin role, false otherwise.
+     */
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+  }
+}

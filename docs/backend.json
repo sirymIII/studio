@@ -1,0 +1,479 @@
+{
+  "entities": {
+    "State": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "State",
+      "type": "object",
+      "description": "Represents a Nigerian state.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the state."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the state."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Destination": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Destination",
+      "type": "object",
+      "description": "Represents a tourist destination.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the destination."
+        },
+        "stateId": {
+          "type": "string",
+          "description": "Reference to State. (Relationship: State 1:N Destination)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the destination."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of the destination (Natural, Historical, Cultural, etc.)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the destination."
+        },
+        "cityTown": {
+          "type": "string",
+          "description": "City or town where the destination is located."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "Latitude of the destination."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitude of the destination."
+        },
+        "recommendedStayDays": {
+          "type": "number",
+          "description": "Recommended duration of stay in days."
+        },
+        "popularityRank": {
+          "type": "number",
+          "description": "Popularity rank of the destination."
+        },
+        "hotelIds": {
+          "type": "array",
+          "description": "References to Hotels. (Relationship: Destination 1:N Hotel)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "transportOptionIds": {
+          "type": "array",
+          "description": "References to TransportOptions. (Relationship: Destination 1:N TransportOption)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mediaIds": {
+          "type": "array",
+          "description": "References to DestinationMedia. (Relationship: Destination 1:N DestinationMedia)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "User ID of the admin who created the destination."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of when the destination was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "stateId",
+        "name",
+        "type",
+        "description",
+        "cityTown",
+        "latitude",
+        "longitude",
+        "recommendedStayDays",
+        "popularityRank",
+        "createdBy",
+        "createdAt"
+      ]
+    },
+    "Hotel": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Hotel",
+      "type": "object",
+      "description": "Represents a hotel at a destination.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the hotel."
+        },
+        "destinationId": {
+          "type": "string",
+          "description": "Reference to Destination. (Relationship: Destination 1:N Hotel)"
+        },
+        "stateId": {
+          "type": "string",
+          "description": "Reference to State. (Relationship: State 1:N Hotel)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the hotel."
+        },
+        "address": {
+          "type": "string",
+          "description": "Address of the hotel."
+        },
+        "contact": {
+          "type": "string",
+          "description": "Contact information for the hotel."
+        },
+        "rating": {
+          "type": "number",
+          "description": "Rating of the hotel."
+        },
+        "priceAvg": {
+          "type": "number",
+          "description": "Average price per night."
+        },
+        "availableRooms": {
+          "type": "number",
+          "description": "Number of available rooms."
+        }
+      },
+      "required": [
+        "id",
+        "destinationId",
+        "stateId",
+        "name",
+        "address",
+        "contact",
+        "rating",
+        "priceAvg",
+        "availableRooms"
+      ]
+    },
+    "TransportOption": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TransportOption",
+      "type": "object",
+      "description": "Represents a transport option to reach a destination.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transport option."
+        },
+        "destinationId": {
+          "type": "string",
+          "description": "Reference to Destination. (Relationship: Destination 1:N TransportOption)"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Mode of transport (e.g., air, road, rail)."
+        },
+        "provider": {
+          "type": "string",
+          "description": "Transport provider (e.g., airline, bus company)."
+        },
+        "departurePoint": {
+          "type": "string",
+          "description": "Departure point."
+        },
+        "arrivalPoint": {
+          "type": "string",
+          "description": "Arrival point."
+        },
+        "routeDetail": {
+          "type": "string",
+          "description": "Details of the route."
+        },
+        "durationMinutes": {
+          "type": "number",
+          "description": "Duration of the journey in minutes."
+        },
+        "priceEstimate": {
+          "type": "number",
+          "description": "Estimated price."
+        },
+        "schedule": {
+          "type": "string",
+          "description": "Schedule of the transport option."
+        },
+        "contact": {
+          "type": "string",
+          "description": "Contact information for the transport provider."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about the transport option."
+        }
+      },
+      "required": [
+        "id",
+        "destinationId",
+        "mode",
+        "provider",
+        "departurePoint",
+        "arrivalPoint",
+        "routeDetail",
+        "durationMinutes",
+        "priceEstimate",
+        "schedule",
+        "contact"
+      ]
+    },
+    "TransportHub": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TransportHub",
+      "type": "object",
+      "description": "Represents a transport hub (airport, rail, bus station).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transport hub."
+        },
+        "stateId": {
+          "type": "string",
+          "description": "Reference to State. (Relationship: State 1:N TransportHub)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the transport hub."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of transport hub (airport, rail, bus station)."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "Latitude of the transport hub."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitude of the transport hub."
+        }
+      },
+      "required": [
+        "id",
+        "stateId",
+        "name",
+        "type",
+        "latitude",
+        "longitude"
+      ]
+    },
+    "DestinationHub": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DestinationHub",
+      "type": "object",
+      "description": "Represents the relationship between a destination and a transport hub.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the destination hub relation."
+        },
+        "destinationId": {
+          "type": "string",
+          "description": "Reference to Destination."
+        },
+        "transportHubId": {
+          "type": "string",
+          "description": "Reference to TransportHub."
+        },
+        "distance": {
+          "type": "number",
+          "description": "Distance between the destination and the transport hub."
+        },
+        "time": {
+          "type": "number",
+          "description": "Travel time between the destination and the transport hub."
+        }
+      },
+      "required": [
+        "id",
+        "destinationId",
+        "transportHubId",
+        "distance",
+        "time"
+      ]
+    },
+    "DestinationMedia": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DestinationMedia",
+      "type": "object",
+      "description": "Represents media (photos) associated with a destination.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the media."
+        },
+        "destinationId": {
+          "type": "string",
+          "description": "Reference to Destination. (Relationship: Destination 1:N DestinationMedia)"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the photo."
+        }
+      },
+      "required": [
+        "id",
+        "destinationId",
+        "photoURL"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/states/{stateId}",
+        "definition": {
+          "entityName": "State",
+          "schema": {
+            "$ref": "#/backend/entities/State"
+          },
+          "description": "Stores states. Keyed by stateId.",
+          "params": [
+            {
+              "name": "stateId",
+              "description": "The unique identifier of the state."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/destinations/{destinationId}",
+        "definition": {
+          "entityName": "Destination",
+          "schema": {
+            "$ref": "#/backend/entities/Destination"
+          },
+          "description": "Stores destinations. Includes denormalized 'createdBy' field for authorization independence, and 'stateId' for efficient filtering.",
+          "params": [
+            {
+              "name": "destinationId",
+              "description": "The unique identifier of the destination."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/hotels/{hotelId}",
+        "definition": {
+          "entityName": "Hotel",
+          "schema": {
+            "$ref": "#/backend/entities/Hotel"
+          },
+          "description": "Stores hotel information. Linked to destinations via destinationId and stateId.",
+          "params": [
+            {
+              "name": "hotelId",
+              "description": "The unique identifier of the hotel."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/transport_options/{transportOptionId}",
+        "definition": {
+          "entityName": "TransportOption",
+          "schema": {
+            "$ref": "#/backend/entities/TransportOption"
+          },
+          "description": "Stores transport options. Linked to destinations via destinationId.",
+          "params": [
+            {
+              "name": "transportOptionId",
+              "description": "The unique identifier of the transport option."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/transport_hubs/{transportHubId}",
+        "definition": {
+          "entityName": "TransportHub",
+          "schema": {
+            "$ref": "#/backend/entities/TransportHub"
+          },
+          "description": "Stores transport hubs (airports, stations). Categorized by stateId.",
+          "params": [
+            {
+              "name": "transportHubId",
+              "description": "The unique identifier of the transport hub."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/destination_hubs/{destinationHubId}",
+        "definition": {
+          "entityName": "DestinationHub",
+          "schema": {
+            "$ref": "#/backend/entities/DestinationHub"
+          },
+          "description": "Stores the relationship between destinations and transport hubs.",
+          "params": [
+            {
+              "name": "destinationHubId",
+              "description": "The unique identifier of the destination hub relation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/destination_media/{destinationMediaId}",
+        "definition": {
+          "entityName": "DestinationMedia",
+          "schema": {
+            "$ref": "#/backend/entities/DestinationMedia"
+          },
+          "description": "Stores media (photo URLs) associated with destinations.",
+          "params": [
+            {
+              "name": "destinationMediaId",
+              "description": "The unique identifier of the destination media."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "RoleAdmin",
+          "schema": {
+            "$ref": "#/backend/entities/RoleAdmin"
+          },
+          "description": "Stores admin roles. Existence of document implies admin role.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to organize tourist destinations in Nigeria, along with associated data like hotels, transport options, and media. It prioritizes authorization independence and supports secure list operations by adhering to the core design principles outlined. Specifically, the design ensures that security rules do not rely on hierarchical `get()` calls and that authorization context is denormalized for atomic operations.\n\n1.  **Authorization Independence**: Achieved primarily through denormalization. For instance, the `destinations` collection includes a `createdBy` field, enabling access control based on the user who created the destination, without needing to fetch additional data from a parent document.  Admin role is assumed by the existance of the document under `/roles_admin/{uid}`.\n2.  **Clarity of Intent**: Each collection is dedicated to a specific entity, clearly defining its purpose. The naming conventions are semantic, and the use of a `status` field (if implemented in the future) would make state transitions explicit.\n3.  **DBAC (No Custom Claims)**: Relies solely on `request.auth.uid` and existence check for admin roles.\n4.  **QAPs**: Supported through structural segregation and membership models where appropriate. For example, listing destinations is secure because the rules can filter based on the `createdBy` field or the existance of the user id on the `/roles_admin/{uid}` path.\n5.  **Invariants**: The structure allows enforcing invariants like ownership by checking the `createdBy` field when creating or updating destinations. Timestamps can be validated using server-side timestamps to ensure accuracy.\n\n*   `/states`: Stores states with their IDs and names.\n*   `/destinations`: Stores tourist destinations with detailed information, including references to related hotels, transport options, and media. The `createdBy` field enables ownership-based access control. Includes `stateId` for filtering by state.\n*   `/hotels`: Stores hotel information, linked to destinations via `destinationId` and `stateId`. This allows efficient querying of hotels for a specific destination or state.\n*   `/transport_options`: Stores transport options for reaching destinations, linked by `destinationId`. This enables querying transport options for a particular destination.\n*   `/transport_hubs`: Stores transport hubs (airports, stations), categorized by `stateId`.\n*   `/destination_hubs`: Defines the relationship between destinations and transport hubs, including distance and travel time. Useful for providing travel directions.\n*   `/destination_media`: Stores media (photo URLs) associated with destinations. Linked to destinations via `destinationId`.\n*   `/roles_admin/{uid}`: Represents admin roles. The existance of a document indicates admin status. Used for authorization in create/update/delete operations.\n\nThis structure enables efficient queries, secure access control, and easy management of tourist destination data."
+  }
+}
