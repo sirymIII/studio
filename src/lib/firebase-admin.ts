@@ -22,6 +22,12 @@ const initializeAdminApp = () => {
     if (!serviceAccount.project_id) {
       throw new Error('Firebase project ID is not defined in environment variables.');
     }
+    if (!serviceAccount.private_key) {
+        throw new Error('Firebase private key is not defined in environment variables.');
+    }
+    if (!serviceAccount.client_email) {
+        throw new Error('Firebase client email is not defined in environment variables.');
+    }
 
     return admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
