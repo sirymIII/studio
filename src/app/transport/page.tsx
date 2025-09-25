@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -12,19 +13,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   aiRoutePlanning,
   AIRoutePlanningOutput,
+  type Route,
 } from '@/ai/flows/ai-route-planning';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
 import { Loader2, Bus, Train, Plane, Car } from 'lucide-react';
+import { bookTransport } from '@/services/booking';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TransportPage() {
   const [origin, setOrigin] = useState('');
@@ -32,6 +29,8 @@ export default function TransportPage() {
   const [budget, setBudget] = useState('');
   const [routes, setRoutes] = useState<AIRoutePlanningOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +47,26 @@ export default function TransportPage() {
       console.error('Error planning route:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleBookNow = async (route: Route) => {
+    const bookingIdentifier = `${route.provider}-${route.departurePoint}-${route.arrivalPoint}`;
+    setBookingId(bookingIdentifier);
+    try {
+      await bookTransport(route);
+      toast({
+        title: 'Booking Successful!',
+        description: 'Your transport has been booked.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Booking Failed',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setBookingId(null);
     }
   };
 
@@ -139,49 +158,65 @@ export default function TransportPage() {
                 Available Routes
               </h2>
               <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-                {routes.routes.map((route, index) => (
-                  <Card key={index}>
-                    <CardHeader className="flex flex-row items-start gap-4 space-y-0">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                        {getIcon(route.mode)}
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">
-                          {route.provider}
-                        </CardTitle>
-                        <CardDescription>
-                          {route.departurePoint} to {route.arrivalPoint}
-                        </CardDescription>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-sm">{route.routeDetail}</p>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="font-semibold">Duration</p>
-                          <p>{route.durationMinutes} mins</p>
+                {routes.routes.map((route, index) => {
+                  const bookingIdentifier = `${route.provider}-${route.departurePoint}-${route.arrivalPoint}`;
+                  const isBooking = bookingId === bookingIdentifier;
+                  return (
+                    <Card key={index}>
+                      <CardHeader className="flex flex-row items-start gap-4 space-y-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                          {getIcon(route.mode)}
                         </div>
                         <div>
-                          <p className="font-semibold">Price</p>
-                          <p>₦{route.priceEstimate.toLocaleString()}</p>
+                          <CardTitle className="text-xl">
+                            {route.provider}
+                          </CardTitle>
+                          <CardDescription>
+                            {route.departurePoint} to {route.arrivalPoint}
+                          </CardDescription>
                         </div>
-                        <div>
-                          <p className="font-semibold">Schedule</p>
-                          <p>{route.schedule}</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <p className="text-sm">{route.routeDetail}</p>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="font-semibold">Duration</p>
+                            <p>{route.durationMinutes} mins</p>
+                          </div>
+                          <div>
+                            <p className="font-semibold">Price</p>
+                            <p>₦{route.priceEstimate.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <p className="font-semibold">Schedule</p>
+                            <p>{route.schedule}</p>
+                          </div>
+                          <div>
+                            <p className="font-semibold">Contact</p>
+                            <p>{route.contact}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold">Contact</p>
-                          <p>{route.contact}</p>
-                        </div>
-                      </div>
-                      {route.notes && (
-                        <p className="text-xs text-muted-foreground">
-                          Note: {route.notes}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                        {route.notes && (
+                          <p className="text-xs text-muted-foreground">
+                            Note: {route.notes}
+                          </p>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={() => handleBookNow(route)}
+                          disabled={isBooking}
+                          className="w-full sm:w-auto"
+                        >
+                          {isBooking ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            'Book Now'
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -191,3 +226,4 @@ export default function TransportPage() {
     </div>
   );
 }
+

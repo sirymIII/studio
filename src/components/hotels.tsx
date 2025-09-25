@@ -1,15 +1,40 @@
-import Image from 'next/image';
-import { Star } from 'lucide-react';
 
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
+'use client';
+
+import Image from 'next/image';
+import { Star, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import placeholderImages from '@/lib/placeholder-images.json';
 import type { Hotel } from '@/lib/types';
+import { bookHotel } from '@/services/booking';
+import { useToast } from '@/hooks/use-toast';
 
 export function Hotels({ hotels }: { hotels: Hotel[] }) {
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleBookNow = async (hotelId: string) => {
+    setBookingId(hotelId);
+    try {
+      await bookHotel(hotelId);
+      toast({
+        title: 'Booking Successful!',
+        description: 'Your hotel has been booked.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Booking Failed',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setBookingId(null);
+    }
+  };
+
   return (
     <section id="hotels" className="py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -26,6 +51,8 @@ export function Hotels({ hotels }: { hotels: Hotel[] }) {
             const img = placeholderImages.placeholderImages.find(
               (p) => p.id === hotel.image.id
             );
+            const isBooking = bookingId === hotel.id;
+
             return (
               <Card key={hotel.id} className="overflow-hidden">
                 <div className="relative h-48 w-full">
@@ -68,7 +95,17 @@ export function Hotels({ hotels }: { hotels: Hotel[] }) {
                         /night
                       </span>
                     </p>
-                    <Button size="sm">Book Now</Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleBookNow(hotel.id)}
+                      disabled={isBooking}
+                    >
+                      {isBooking ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        'Book Now'
+                      )}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

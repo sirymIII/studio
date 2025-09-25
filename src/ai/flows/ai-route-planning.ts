@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -28,21 +29,22 @@ const AIRoutePlanningInputSchema = z.object({
 });
 export type AIRoutePlanningInput = z.infer<typeof AIRoutePlanningInputSchema>;
 
+const RouteSchema = z.object({
+  mode: z.string().describe('The transport mode for this route.'),
+  provider: z.string().describe('The transport provider.'),
+  departurePoint: z.string().describe('The departure point.'),
+  arrivalPoint: z.string().describe('The arrival point.'),
+  routeDetail: z.string().describe('Detailed route information.'),
+  durationMinutes: z.number().describe('The duration of the route in minutes.'),
+  priceEstimate: z.number().describe('The estimated price for this route in Naira.'),
+  schedule: z.string().describe('The schedule for this route (if applicable).'),
+  contact: z.string().describe('Contact information for the transport provider.'),
+  notes: z.string().describe('Additional notes or information about the route.'),
+});
+export type Route = z.infer<typeof RouteSchema>;
+
 const AIRoutePlanningOutputSchema = z.object({
-  routes: z.array(
-    z.object({
-      mode: z.string().describe('The transport mode for this route.'),
-      provider: z.string().describe('The transport provider.'),
-      departurePoint: z.string().describe('The departure point.'),
-      arrivalPoint: z.string().describe('The arrival point.'),
-      routeDetail: z.string().describe('Detailed route information.'),
-      durationMinutes: z.number().describe('The duration of the route in minutes.'),
-      priceEstimate: z.number().describe('The estimated price for this route in Naira.'),
-      schedule: z.string().describe('The schedule for this route (if applicable).'),
-      contact: z.string().describe('Contact information for the transport provider.'),
-      notes: z.string().describe('Additional notes or information about the route.'),
-    })
-  ),
+  routes: z.array(RouteSchema),
 });
 export type AIRoutePlanningOutput = z.infer<typeof AIRoutePlanningOutputSchema>;
 
