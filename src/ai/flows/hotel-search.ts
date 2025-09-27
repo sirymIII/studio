@@ -46,21 +46,13 @@ const searchHotels = ai.defineTool(
     outputSchema: HotelApiSearchOutputSchema,
   },
   async (input) => {
-    console.log('Calling external hotel search API with input:', input);
+    console.log('Simulating call to Wakanow API with input:', input);
 
     // In a real implementation, you would make the fetch request here.
-    // const response = await fetch('https://wakanow-api-hotels-production-preprod.azurewebsites.net/api/hotels/SearchHotels/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // 'Authorization': `Bearer ${process.env.WAKANOW_API_KEY}` // Example of using an API key
-    //   },
-    //   body: JSON.stringify(input),
-    // });
-    // const data = await response.json();
-    //
-    // // You would then map the response data to the HotelApiSearchOutputSchema
-    // return data;
+    // This process might involve multiple steps:
+    // 1. Get a locationId from an endpoint like 'Select2' based on input.Destination
+    // 2. POST to 'SearchHotels' to initiate the search and get a searchKey
+    // 3. GET from 'SearchHotels/{searchKey}/{currency}' to get the results.
 
     // For now, we return mock data that matches the output schema.
     return {
@@ -78,6 +70,13 @@ const searchHotels = ai.defineTool(
           location: input.Destination,
           price: 30000,
           rating: 3,
+        },
+        {
+          id: 'hotel-789',
+          name: 'The Grand Resort',
+          location: input.Destination,
+          price: 120000,
+          rating: 5,
         },
       ],
     };
@@ -106,51 +105,67 @@ const hotelSearchAgent = ai.defineFlow(
     inputSchema: HotelSearchInputSchema,
     outputSchema: HotelSearchOutputSchema,
     tools: [searchHotels],
-    prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels.
-
-    - You have access to a \`searchHotels\` tool.
-    - Analyze the user's query to extract the necessary information: destination, check-in date, check-out date, and number of guests.
-    - Today's date is ${new Date().toLocaleDateString()}.
-    - If any information is missing, you MUST ask the user for it. Do not make up dates or guest counts.
-    - If you have all the information, call the \`searchHotels\` tool.
-    - When you get the results, present them to the user in a clear and helpful summary.
-    - If no hotels are found, inform the user gracefully.
-
-    User Query: {{{query}}}
-    `,
   },
   async (input) => {
+    // Get today's date to provide context to the model.
+    const today = new Date().toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+    });
+
     const llmResponse = await ai.generate({
-      prompt: input.query,
+      prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels.
+
+      - You have access to a \`searchHotels\` tool.
+      - Analyze the user's query to extract the necessary information: destination, check-in date, check-out date, and number of guests.
+      - Today's date is ${today}.
+      - If any information is missing, you MUST ask the user for it. Do not make assumptions about dates, guest counts, or destinations.
+      - Once you have all the necessary information, call the \`searchHotels\` tool.
+      - When you get the results from the tool, present them to the user in a clear and helpful summary. For example: "I found 3 great hotels for you in Lagos. The Example Hotel Suites is a 5-star hotel for ₦75,000 per night...".
+      - If no hotels are found, inform the user gracefully.
+
+      User Query: ${input.query}
+      `,
       model: 'googleai/gemini-2.5-flash',
       tools: [searchHotels],
       toolConfig: {
-          client: 'genkit'
+        client: 'genkit' // Use Genkit's tool client
       }
     });
 
+    // Check if the model decided to call the searchHotels tool.
     const toolCalls = llmResponse.toolCalls();
 
     if (toolCalls.length > 0) {
-        const toolResults = [];
-        for (const call of toolCalls) {
-            const toolResult = await call.run();
-            toolResults.push(toolResult);
-        }
+      const toolResults = [];
+      for (const call of toolCalls) {
+        // Execute the tool call (in this case, our mock API)
+        const toolResult = await call.run();
+        toolResults.push(toolResult);
+      }
 
-        const finalResponse = await ai.generate({
-            prompt: `Summarize the results from the hotel search.`,
-            history: [
-                { role: 'user', content: input.query },
-                llmResponse.message,
-                { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) }
-            ]
-        });
-        return { searchSummary: finalResponse.text() };
+      // Send the tool results back to the model to generate a human-friendly summary.
+      const finalResponse = await ai.generate({
+          prompt: `Please summarize the results from the hotel search in a friendly and helpful way. List the hotel names, prices, and ratings.`,
+          history: [
+              { role: 'user', content: input.query },
+              llmResponse.message, // The model's message that included the tool call
+              { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) } // The results from running the tool
+          ]
+      });
+
+      // The final output includes the raw hotel data and the AI-generated summary.
+      return {
+        hotels: toolResults[0]?.output?.hotels || [],
+        searchSummary: finalResponse.text(),
+      };
     }
 
-
     // If the model did not call a tool, it's likely asking for more information.
-    return { searchSummary: llmResponse.text() };
+    // Return the model's question directly to the user.
+    return {
+      searchSummary: llmResponse.text(),
+    };
   }
 );
