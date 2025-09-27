@@ -1,8 +1,10 @@
+
 'use client';
 
 import { z } from 'zod';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { HotelSearchOutputSchema } from '@/ai/flows/hotel-search';
+import { HotelSearchOutputSchema } from '@/ai/flows/hotel-schemas';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -51,7 +53,11 @@ export function HotelSearchResults({ results }: { results: HotelSearchOutput }) 
                            </div>
                         ))}
                     </div>
-                    <Button className="mt-6 w-full sm:w-auto">View Details</Button>
+                     <Button asChild className="mt-6 w-full sm:w-auto">
+                        <Link href={`/book/${hotel.hotelId}`}>
+                            View Details & Book
+                        </Link>
+                    </Button>
                 </CardContent>
               </Card>
             ))}
