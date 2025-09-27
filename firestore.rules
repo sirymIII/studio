@@ -1,45 +1,40 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper functions
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
     function isAdmin() {
       return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    // Destinations: Publicly readable, only admins can write.
+    // Destinations: Public read, admin write
     match /destinations/{destinationId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Hotels: Publicly readable, only admins can write.
+    // Hotels: Public read, admin write
     match /hotels/{hotelId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // User Profiles: Users can read and write their own profile.
+    // User Profiles: Users can read/write their own profile
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-    
-    // Contact Messages: Only admins can read. Anyone can create.
-    match /contact_messages/{messageId} {
-      allow read: if isAdmin();
-      allow create: if true;
-      allow update, delete: if false;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Admin Roles: Only readable and writable by other admins.
+    // Admin Roles: Only readable by admins (for now)
     match /roles_admin/{userId} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin();
+      allow write: if false; // Prevent client-side modification of roles
+    }
+
+    // Contact Messages: Only writable by anyone, but only readable by admins.
+    match /contact_messages/{messageId} {
+        allow create: if true;
+        allow read, update, delete: if isAdmin();
     }
   }
 }
