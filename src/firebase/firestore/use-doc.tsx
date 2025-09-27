@@ -1,3 +1,4 @@
+
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -72,17 +73,23 @@ export function useDoc<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        const contextualError = new FirestorePermissionError({
-          operation: 'get',
-          path: memoizedDocRef.path,
-        })
+        if (error.code === 'permission-denied') {
+            const contextualError = new FirestorePermissionError({
+              operation: 'get',
+              path: memoizedDocRef.path,
+            })
 
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
+            setError(contextualError)
+            setData(null)
+            setIsLoading(false)
 
-        // trigger global error propagation
-        errorEmitter.emit('permission-error', contextualError);
+            // trigger global error propagation
+            errorEmitter.emit('permission-error', contextualError);
+        } else {
+            setError(error);
+            setData(null);
+            setIsLoading(false);
+        }
       }
     );
 

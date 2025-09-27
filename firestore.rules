@@ -1,167 +1,59 @@
-/**
- * @file Overview
- * This ruleset enforces a role-based access control model with an additional layer of ownership for certain data.
- *
- * Data Structure:
- * - /states/{stateId}: Stores state information. Publicly readable.
- * - /destinations/{destinationId}: Stores destination information, including a `createdBy` field for ownership.
- * - /hotels/{hotelId}: Stores hotel information, publicly readable.
- * - /transport_options/{transportOptionId}: Stores transport options, publicly readable.
- * - /transport_hubs/{transportHubId}: Stores transport hubs, publicly readable.
- * - /destination_hubs/{destinationHubId}: Stores relationship data between destinations and transport hubs, publicly readable.
- * - /destination_media/{destinationMediaId}: Stores media associated with destinations, publicly readable.
- * - /roles_admin/{userId}: Presence of document grants admin role.
- *
- * Key Security Decisions:
- * - Read access is generally open for most collections to facilitate discovery.
- * - Writes to the `destinations` collection are restricted to admins or the user who created the destination.
- * - Admin privileges are determined by the presence of a document in the `/roles_admin/{userId}` collection.
- * - Listing of documents is allowed for all collections, assuming public readability.
- */
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Allows read-only access to state information.
-     * @path /states/{stateId}
-     * @allow (get, list) Any user can read state information.
-     * @deny (create, update, delete) No one can create, update, or delete state information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    // Helper function to check for admin role
+    function isAdmin(userId) {
+      return exists(/databases/$(database)/documents/roles_admin/$(userId));
+    }
+
+    // States: Public read, admin write
     match /states/{stateId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Manages tourist destinations, restricting writes to admins or the creator.
-     * @path /destinations/{destinationId}
-     * @allow (get, list) Any user can read destination information.
-     * @allow (create) Only admins or the user themselves (if `request.resource.data.createdBy == request.auth.uid`) can create a destination.
-     * @allow (update, delete) Only admins or the creator of the destination can update or delete it. Must be an existing document.
-     * @deny (create) A non-admin user cannot create a destination with a `createdBy` field that does not match their own UID.
-     * @deny (update, delete) A non-admin user cannot update or delete a destination they do not own.
-     * @principle Owner-only writes with public read access, admin override.
-     */
+    // Destinations: Public read, admin write
     match /destinations/{destinationId} {
-      allow get, list: if true;
-      allow create: if isSignedIn() && (isAdmin() || request.resource.data.createdBy == request.auth.uid);
-      allow update: if isSignedIn() && (isAdmin() || isExistingOwner(resource.data.createdBy));
-      allow delete: if isSignedIn() && (isAdmin() || isExistingOwner(resource.data.createdBy));
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Allows read-only access to hotel information.
-     * @path /hotels/{hotelId}
-     * @allow (get, list) Any user can read hotel information.
-     * @deny (create, update, delete) No one can create, update, or delete hotel information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    // Hotels: Public read, admin write
     match /hotels/{hotelId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Allows read-only access to transport option information.
-     * @path /transport_options/{transportOptionId}
-     * @allow (get, list) Any user can read transport option information.
-     * @deny (create, update, delete) No one can create, update, or delete transport option information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    // Transport Options: Authenticated read, admin write
     match /transport_options/{transportOptionId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Allows read-only access to transport hub information.
-     * @path /transport_hubs/{transportHubId}
-     * @allow (get, list) Any user can read transport hub information.
-     * @deny (create, update, delete) No one can create, update, or delete transport hub information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    // Transport Hubs: Authenticated read, admin write
     match /transport_hubs/{transportHubId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
-
-    /**
-     * @description Allows read-only access to destination hub relationship information.
-     * @path /destination_hubs/{destinationHubId}
-     * @allow (get, list) Any user can read destination hub relationship information.
-     * @deny (create, update, delete) No one can create, update, or delete destination hub relationship information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    
+    // Destination Hubs: Authenticated read, admin write
     match /destination_hubs/{destinationHubId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Allows read-only access to destination media information.
-     * @path /destination_media/{destinationMediaId}
-     * @allow (get, list) Any user can read destination media information.
-     * @deny (create, update, delete) No one can create, update, or delete destination media information through client-side rules.
-     * @principle Public read, no write access.
-     */
+    // Destination Media: Authenticated read, admin write
     match /destination_media/{destinationMediaId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
-    /**
-     * @description Manages admin roles based on document existence.
-     * @path /roles_admin/{userId}
-     * @allow (get) Anyone can check if a user is an admin.
-     * @allow (create) Only the user themselves can create their admin role (for initial setup).
-     * @allow (delete) Only the user themselves or an existing admin can delete the admin role.
-     * @deny (update) No updates allowed.
-     * @principle Role-based access control, self-creation.
-     */
+    // Admin Roles: Only admins can read/write other admin roles
     match /roles_admin/{userId} {
-      allow get: if true;
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if false;
-      allow delete: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
-      allow list: if false;
-    }
-
-    // ---- Helper functions ----
-
-    /**
-     * @description Checks if the user is signed in.
-     * @return {bool} True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the user is an admin by verifying the existence of a document in the `/roles_admin/{userId}` collection.
-     * @return {bool} True if the user is an admin, false otherwise.
-     */
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    /**
-     * @description Checks if the user is the owner of the resource by comparing the provided userId with the request's authentication UID.
-     * @param {string} userId The user ID to compare against the request's authentication UID.
-     * @return {bool} True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the user is the owner of an existing resource.
-     * @param {string} userId The user ID of the potential owner.
-     * @return {bool} True if the user is the owner and the document exists.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+      allow read, write: if request.auth != null && isAdmin(request.auth.uid);
     }
   }
 }
