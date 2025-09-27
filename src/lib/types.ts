@@ -47,19 +47,35 @@ export type Hotel = z.infer<typeof HotelSchema> & {
   };
 };
 
-// Schema for user profile data for the form
-export const UserProfileFormSchema = z.object({
-  displayName: z.string().min(2, 'Display name must be at least 2 characters.'),
+
+// User Profile Schemas based on the new detailed structure
+const BasicInfoSchema = z.object({
+  fullName: z.string().min(2, 'Full name must be at least 2 characters.'),
+  email: z.string().email('Please enter a valid email.').optional(),
+  phoneNumber: z.string().optional(),
+  dateOfBirth: z.string().optional(), // Using string for date input
+  nationality: z.string().optional(),
+  profilePictureUrl: z.string().url().optional().nullable(),
 });
 
-// Main user profile schema
+const TravelPreferencesSchema = z.object({
+  preferredDestinations: z.array(z.string()).optional(),
+  travelInterests: z.array(z.string()).optional(),
+  budgetRange: z.enum(['economy', 'mid-range', 'luxury']).optional(),
+  preferredAccommodation: z.enum(['Hotel', 'Resort', 'Guest House', 'Airbnb', 'Hostel']).optional(),
+  languagePreference: z.string().optional(),
+});
+
 export const UserProfileSchema = z.object({
-  uid: z.string(),
-  email: z.string().email(),
-  displayName: z.string().optional().nullable(),
-  photoURL: z.string().url().optional().nullable(),
-  createdAt: z.any().optional(), // Firestore timestamp
+  userId: z.string(),
+  basicInfo: BasicInfoSchema,
+  travelPreferences: TravelPreferencesSchema,
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;
+
+// This schema will be used for the form to edit the basic info
+export const UserProfileFormSchema = BasicInfoSchema;
 export type UserProfileFormData = z.infer<typeof UserProfileFormSchema>;

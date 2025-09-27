@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,11 +19,21 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Loader2, LogOut, User as UserIcon } from 'lucide-react';
 import { ProfileForm } from '@/components/profile-form';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { UserProfile } from '@/lib/types';
 
 export default function ProfilePage() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+
+  const userProfileDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [user, firestore]
+  );
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileDocRef);
+
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -59,12 +71,20 @@ export default function ProfilePage() {
                 )}
               </Avatar>
               <CardTitle className="text-3xl font-headline">
-                {user.displayName || 'My Profile'}
+                {userProfile?.basicInfo.fullName || user.displayName || 'My Profile'}
               </CardTitle>
               <CardDescription>{user.email}</CardDescription>
             </CardHeader>
             <CardContent>
-              <ProfileForm user={user} />
+              {isProfileLoading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ) : (
+                <ProfileForm user={user} profile={userProfile} />
+              )}
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
                <div className="w-full h-px bg-border" />

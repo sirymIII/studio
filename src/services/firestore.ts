@@ -1,8 +1,9 @@
+
 'use client';
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, getCountFromServer } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import type { Destination, Hotel } from '@/lib/types';
+import type { Destination, Hotel, UserProfile } from '@/lib/types';
 
 export function useDestinations() {
   const firestore = useFirestore();
@@ -31,6 +32,16 @@ export function useHotels(destinationId?: string) {
   );
   return useCollection<Hotel>(hotelsQuery);
 }
+
+export function useUserProfile(uid?: string) {
+  const firestore = useFirestore();
+  const profileDoc = useMemoFirebase(
+    () => (firestore && uid ? doc(firestore, 'users', uid) : null),
+    [firestore, uid]
+  );
+  return useDoc<UserProfile>(profileDoc);
+}
+
 
 export function useStats() {
   const firestore = useFirestore();

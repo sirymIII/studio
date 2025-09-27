@@ -18,16 +18,21 @@ import { updateUserProfile } from '@/app/profile/actions';
 import {
   UserProfileFormSchema,
   type UserProfileFormData,
+  type UserProfile,
 } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import type { User } from 'firebase/auth';
 
-export function ProfileForm({ user }: { user: User }) {
+export function ProfileForm({ user, profile }: { user: User, profile: UserProfile | null }) {
   const { toast } = useToast();
   const form = useForm<UserProfileFormData>({
     resolver: zodResolver(UserProfileFormSchema),
     defaultValues: {
-      displayName: user.displayName || '',
+      fullName: profile?.basicInfo.fullName || user.displayName || '',
+      email: profile?.basicInfo.email || user.email || '',
+      phoneNumber: profile?.basicInfo.phoneNumber || '',
+      dateOfBirth: profile?.basicInfo.dateOfBirth || '',
+      nationality: profile?.basicInfo.nationality || '',
     },
   });
 
@@ -55,13 +60,84 @@ export function ProfileForm({ user }: { user: User }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="displayName"
+          name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Display Name</FormLabel>
+              <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Your Name"
+                  placeholder="Your Full Name"
+                  {...field}
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="your.email@example.com"
+                  {...field}
+                  disabled // Email is not editable
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                    <Input
+                    placeholder="+234..."
+                    {...field}
+                    disabled={isSubmitting}
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+             <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                    <Input
+                    type="date"
+                    {...field}
+                    disabled={isSubmitting}
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+        <FormField
+          control={form.control}
+          name="nationality"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nationality</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g., Nigerian"
                   {...field}
                   disabled={isSubmitting}
                 />
