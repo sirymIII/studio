@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Loader2, LogOut, User as UserIcon } from 'lucide-react';
+import { ProfileForm } from '@/components/profile-form';
 
 export default function ProfilePage() {
   const auth = useAuth();
@@ -58,17 +59,15 @@ export default function ProfilePage() {
                 )}
               </Avatar>
               <CardTitle className="text-3xl font-headline">
-                {user.displayName || 'Welcome!'}
+                {user.displayName || 'My Profile'}
               </CardTitle>
               <CardDescription>{user.email}</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* You can add more profile details here in the future */}
-              <div className="text-center text-muted-foreground">
-                <p>Profile management features coming soon.</p>
-              </div>
+              <ProfileForm user={user} />
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-4">
+               <div className="w-full h-px bg-border" />
               <Button
                 variant="destructive"
                 className="w-full"

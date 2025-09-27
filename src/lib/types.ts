@@ -47,13 +47,19 @@ export type Hotel = z.infer<typeof HotelSchema> & {
   };
 };
 
-// Schema for user profile data
+// Schema for user profile data for the form
+export const UserProfileFormSchema = z.object({
+  displayName: z.string().min(2, 'Display name must be at least 2 characters.'),
+});
+
+// Main user profile schema
 export const UserProfileSchema = z.object({
   uid: z.string(),
   email: z.string().email(),
-  displayName: z.string().optional(),
-  photoURL: z.string().url().optional(),
+  displayName: z.string().optional().nullable(),
+  photoURL: z.string().url().optional().nullable(),
   createdAt: z.any().optional(), // Firestore timestamp
 });
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;
+export type UserProfileFormData = z.infer<typeof UserProfileFormSchema>;
