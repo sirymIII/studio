@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
-import { Logo } from './icons';
 
 export function Footer() {
   return (
@@ -9,7 +7,6 @@ export function Footer() {
         {/* Brand / Mission */}
         <div>
           <div className="flex items-center gap-2">
-            <Logo className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground font-headline">TourNaija</span>
           </div>
           <p className="mt-3 text-sm leading-6">
@@ -76,7 +73,7 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Legal & Social */}
+        {/* Legal */}
         <div>
           <h3 className="mb-4 text-lg font-semibold text-foreground">Legal</h3>
           <ul className="space-y-2">
@@ -91,22 +88,6 @@ export function Footer() {
               </Link>
             </li>
           </ul>
-
-          {/* Social Icons */}
-          <div className="mt-6 flex space-x-4">
-            <Link href="#" className="hover:text-primary">
-              <Facebook />
-            </Link>
-            <Link href="#" className="hover:text-primary">
-              <Twitter />
-            </Link>
-            <Link href="#" className="hover:text-primary">
-              <Instagram />
-            </Link>
-            <Link href="#" className="hover:text-primary">
-              <Linkedin />
-            </Link>
-          </div>
         </div>
       </div>
 
