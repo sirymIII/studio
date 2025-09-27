@@ -52,6 +52,12 @@ export function Header() {
           >
             Hotels
           </Link>
+           <Link
+            href="/itinerary"
+            className="transition-colors hover:text-primary"
+          >
+            Itinerary Planner
+          </Link>
           <Link
             href="/transport"
             className="transition-colors hover:text-primary"
@@ -90,7 +96,7 @@ export function Header() {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user.displayName || 'My Account'}
+                      {isAdmin ? 'Admin' : (user.displayName || 'My Account')}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
