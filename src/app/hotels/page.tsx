@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, Search } from 'lucide-react';
-import { searchHotelsFlow, HotelSearchOutputSchema } from '@/ai/flows/hotel-search';
+import { searchHotelsFlow } from '@/ai/flows/hotel-search';
+import { HotelSearchOutputSchema } from '@/ai/flows/hotel-schemas';
 import { HotelSearchResults } from '@/components/hotel-search-results';
 import { z } from 'zod';
 

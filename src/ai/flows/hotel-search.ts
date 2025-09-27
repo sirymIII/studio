@@ -3,34 +3,20 @@
  * @fileOverview A flow for searching for hotels using the Makcorps Hotel API.
  *
  * - searchHotelsFlow - A function that handles the hotel search process.
- * - HotelSearchInput - The input type for the hotel search.
- * - HotelSearchOutput - The return type for the hotel search.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import {
+  HotelApiSearchInputSchema,
+  HotelApiSearchOutputSchema,
+  HotelSearchInputSchema,
+  HotelSearchOutputSchema,
+  HotelSearchInput,
+  HotelSearchOutput,
+  VendorPriceSchema
+} from './hotel-schemas';
 
-// Schemas for the new Hotelbeds-like API
-
-const VendorPriceSchema = z.object({
-  price: z.number().nullable(),
-  tax: z.number().nullable(),
-  vendor: z.string().nullable(),
-});
-
-const HotelSchema = z.object({
-  hotelName: z.string(),
-  hotelId: z.string(),
-  vendors: z.array(VendorPriceSchema),
-});
-
-const HotelApiSearchInputSchema = z.object({
-  city: z.string().describe('The name of the city to search for hotels in.'),
-});
-
-const HotelApiSearchOutputSchema = z.object({
-  hotels: z.array(HotelSchema),
-});
 
 /**
  * A Genkit tool that simulates calling the Makcorps Free Hotel API.
@@ -125,24 +111,11 @@ const searchHotels = ai.defineTool(
   }
 );
 
-
-export const HotelSearchInputSchema = z.object({
-  query: z.string().describe('The user\'s natural language query for finding hotels or hotel details.'),
-});
-export type HotelSearchInput = z.infer<typeof HotelSearchInputSchema>;
-
-export const HotelSearchOutputSchema = z.object({
-  hotels: z.array(HotelSchema).optional(),
-  searchSummary: z.string().describe('A summary of the search results or a message to the user.'),
-});
-export type HotelSearchOutput = z.infer<typeof HotelSearchOutputSchema>;
-
 const hotelSearchAgent = ai.defineFlow(
   {
     name: 'hotelSearchAgent',
     inputSchema: HotelSearchInputSchema,
     outputSchema: HotelSearchOutputSchema,
-    tools: [searchHotels],
   },
   async (input) => {
     const llmResponse = await ai.generate({
