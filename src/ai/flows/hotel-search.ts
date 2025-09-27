@@ -131,9 +131,6 @@ const hotelSearchAgent = ai.defineFlow(
       `,
       model: 'googleai/gemini-2.5-flash',
       tools: [searchHotels],
-      toolConfig: {
-        client: 'genkit'
-      }
     });
 
     const toolCalls = llmResponse.toolCalls;
