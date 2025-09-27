@@ -1,5 +1,6 @@
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
@@ -21,6 +22,16 @@ export default function AboutPage() {
                 North, the sacred traditions of the Osun-Osogbo Festival, or the
                 vibrant nightlife of Lagos.
               </p>
+              
+              <div className="relative my-8 h-96 w-full overflow-hidden rounded-lg">
+                <Image 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Zuma_Rock_in_Nigeria_2.jpg/1280px-Zuma_Rock_in_Nigeria_2.jpg"
+                  alt="Zuma Rock, a large monolith in Nigeria"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
               <p>
                 Nature lovers will find plenty to explore: the rolling hills and
                 serene landscapes of Obudu Mountain Resort, the spectacular
