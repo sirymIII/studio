@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from 'next/link';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Shield } from 'lucide-react';
 import { Button } from './ui/button';
 import { Logo } from './icons';
 import { useAuth, useUser } from '@/firebase';
@@ -17,6 +18,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Skeleton } from './ui/skeleton';
 import { useRouter } from 'next/navigation';
 
+const ADMIN_EMAIL = 'mukhtar6369@bazeuniversity.edu.ng';
+
 export function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
@@ -26,6 +29,8 @@ export function Header() {
     await auth.signOut();
     router.push('/');
   };
+  
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -93,12 +98,21 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <UserIcon className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
+                {isAdmin ? (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
