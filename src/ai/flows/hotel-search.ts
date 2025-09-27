@@ -137,11 +137,6 @@ export const HotelSearchOutputSchema = z.object({
 });
 export type HotelSearchOutput = z.infer<typeof HotelSearchOutputSchema>;
 
-export async function searchHotelsFlow(input: HotelSearchInput): Promise<HotelSearchOutput> {
-    return hotelSearchAgent(input);
-}
-
-
 const hotelSearchAgent = ai.defineFlow(
   {
     name: 'hotelSearchAgent',
@@ -197,3 +192,7 @@ const hotelSearchAgent = ai.defineFlow(
     };
   }
 );
+
+export async function searchHotelsFlow(input: HotelSearchInput): Promise<HotelSearchOutput> {
+    return hotelSearchAgent(input);
+}
