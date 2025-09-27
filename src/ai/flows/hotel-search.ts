@@ -151,7 +151,8 @@ const hotelSearchAgent = ai.defineFlow(
               { role: 'user', content: input.query },
               llmResponse.message, 
               { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) }
-          ]
+          ],
+          model: 'googleai/gemini-2.5-flash',
       });
 
       return {
