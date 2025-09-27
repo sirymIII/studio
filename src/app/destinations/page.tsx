@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -42,27 +43,29 @@ export default function DestinationsPage() {
                   (p) => p.id === dest.image.id
                 );
                 return (
-                  <Card key={dest.id} className="overflow-hidden">
-                    <div className="relative h-48 w-full">
-                      {img && (
-                        <Image
-                          src={img.imageUrl}
-                          alt={dest.name}
-                          fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
-                          data-ai-hint={img.imageHint}
-                        />
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-headline text-lg font-bold">
-                        {dest.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {dest.state}
-                      </p>
-                    </CardContent>
-                  </Card>
+                   <Link key={dest.id} href={`/destinations/${dest.id}`} className="group">
+                    <Card className="overflow-hidden h-full">
+                      <div className="relative h-48 w-full">
+                        {img && (
+                          <Image
+                            src={img.imageUrl}
+                            alt={dest.name}
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={img.imageHint}
+                          />
+                        )}
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-headline text-lg font-bold">
+                          {dest.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {dest.state}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 );
               })}
             </div>

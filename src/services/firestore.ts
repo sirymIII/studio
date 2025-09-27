@@ -1,6 +1,6 @@
 'use client';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, getCountFromServer } from 'firebase/firestore';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, getCountFromServer } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import type { Destination, Hotel } from '@/lib/types';
 
@@ -13,11 +13,21 @@ export function useDestinations() {
   return useCollection<Destination>(destinationsQuery);
 }
 
-export function useHotels() {
+export function useDestination(id?: string) {
+  const firestore = useFirestore();
+  const destinationDoc = useMemoFirebase(
+    () => (firestore && id ? doc(firestore, 'destinations', id) : null),
+    [firestore, id]
+  );
+  return useDoc<Destination>(destinationDoc);
+}
+
+
+export function useHotels(destinationId?: string) {
   const firestore = useFirestore();
   const hotelsQuery = useMemoFirebase(
-    () => (firestore ? collection(firestore, 'hotels') : null),
-    [firestore]
+    () => (firestore ? collection(firestore, 'hotels') : null), // In a real app, you might query where('destinationId', '==', destinationId)
+    [firestore, destinationId]
   );
   return useCollection<Hotel>(hotelsQuery);
 }

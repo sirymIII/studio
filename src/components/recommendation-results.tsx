@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MapPin, Star, Calendar } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export function RecommendationResults({
   results,
@@ -32,13 +33,13 @@ export function RecommendationResults({
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {results.recommendations.map((rec, index) => (
-            <Card key={index} className="flex flex-col overflow-hidden">
+            <Card key={index} className="flex flex-col overflow-hidden group">
               <div className="relative h-48 w-full">
                 <Image
                   src={`https://picsum.photos/seed/${rec.latitude}/600/400`}
                   alt={rec.destinationName}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                   data-ai-hint={`${rec.type} landscape`}
                 />
               </div>
@@ -62,7 +63,10 @@ export function RecommendationResults({
                      <Calendar className="h-4 w-4 text-primary" />
                      <span>Recommended Stay: {rec.recommendedStayDays} days</span>
                    </div>
-                  <Button className="mt-2 w-full">Explore</Button>
+                  <Button asChild className="mt-2 w-full">
+                    {/* This will need to be updated once we have a way to find a destination from the AI result */}
+                    <Link href={`/destinations`}>Explore</Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
