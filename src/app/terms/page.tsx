@@ -51,7 +51,7 @@ export default function TermsAndConditionsPage() {
               
                <h2>Contact Us</h2>
               <p>
-                If you have any questions about these Terms, please contact us at contact@tournaija.com.
+                If you have any questions about these Terms, please contact us at mukhtar6369@bazeuniversity.edu.ng.
               </p>
             </div>
           </div>
