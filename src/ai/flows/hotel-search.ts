@@ -136,7 +136,7 @@ const hotelSearchAgent = ai.defineFlow(
       }
     });
 
-    const toolCalls = llmResponse.toolCalls();
+    const toolCalls = llmResponse.toolCalls;
 
     if (toolCalls.length > 0) {
       const toolResults = [];
@@ -156,12 +156,12 @@ const hotelSearchAgent = ai.defineFlow(
 
       return {
         hotels: toolResults.find(r => r.tool === 'searchHotels')?.output?.hotels || [],
-        searchSummary: finalResponse.text(),
+        searchSummary: finalResponse.text,
       };
     }
 
     return {
-      searchSummary: llmResponse.text(),
+      searchSummary: llmResponse.text,
     };
   }
 );

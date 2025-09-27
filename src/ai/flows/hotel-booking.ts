@@ -155,7 +155,7 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
     tools: [validateHotelBooking, getBookingDetails],
   });
 
-  const toolCalls = llmResponse.toolCalls();
+  const toolCalls = llmResponse.toolCalls;
 
   if (toolCalls.length > 0) {
     const toolResults = [];
@@ -176,12 +176,12 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
 
     return {
       bookingConfirmation: toolResults.find(r => r.tool === 'validateHotelBooking')?.output,
-      responseText: finalResponse.text(),
+      responseText: finalResponse.text,
     };
   }
 
   // If no tool was called, the model is likely asking for more information.
   return {
-    responseText: llmResponse.text(),
+    responseText: llmResponse.text,
   };
 }
