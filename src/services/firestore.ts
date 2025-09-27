@@ -4,6 +4,7 @@ import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase
 import { collection, doc, getCountFromServer } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import type { Destination, Hotel, UserProfile } from '@/lib/types';
+import { getUserCount } from '@/app/admin/actions';
 
 export function useDestinations() {
   const firestore = useFirestore();
@@ -48,7 +49,7 @@ export function useStats() {
   const [stats, setStats] = useState({
     destinations: 0,
     hotels: 0,
-    users: 0, // Users count from auth is not directly available on client, needs a secure backend call.
+    users: 0, 
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -62,13 +63,17 @@ export function useStats() {
         const destinationsCol = collection(firestore, 'destinations');
         const hotelsCol = collection(firestore, 'hotels');
         
-        const destinationsSnap = await getCountFromServer(destinationsCol);
-        const hotelsSnap = await getCountFromServer(hotelsCol);
+        // Fetch counts from Firestore and the user count from the server action in parallel
+        const [destinationsSnap, hotelsSnap, usersCount] = await Promise.all([
+          getCountFromServer(destinationsCol),
+          getCountFromServer(hotelsCol),
+          getUserCount()
+        ]);
 
         setStats({
           destinations: destinationsSnap.data().count,
           hotels: hotelsSnap.data().count,
-          users: 0, // Placeholder
+          users: usersCount,
         });
       } catch (e: any) {
         setError(e);
