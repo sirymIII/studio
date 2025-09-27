@@ -30,7 +30,7 @@ function initializeAdminApp() {
 initializeAdminApp();
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
-export function initializeFirebase() {
+export async function initializeFirebase() {
   if (!adminApp || !adminAuth || !adminFirestore) {
     // This can happen if the service account key is not set.
     // Handle this case gracefully, perhaps by throwing a more specific error
