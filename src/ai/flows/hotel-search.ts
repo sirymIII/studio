@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A flow for searching for hotels and retrieving hotel details.
+ * @fileOverview A flow for searching for hotels using the Makcorps Hotel API.
  *
  * - searchHotelsFlow - A function that handles the hotel search process.
  * - HotelSearchInput - The input type for the hotel search.
@@ -10,118 +10,121 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-// Schema for the input of the hotel search tool, based on the provided sample
-const HotelApiSearchInputSchema = z.object({
-  CheckinDate: z.string().describe('Check-in date in MM/DD/YYYY format.'),
-  CheckoutDate: z.string().describe('Checkout-out date in MM/DD/YYYY format.'),
-  Destination: z.string().describe('The city or area to search for hotels in.'),
-  Room1: z.string().describe('Number of adults in the room.'),
-  totalGuests: z.number().describe('Total number of guests.'),
-  TargetCurrency: z.string().default('NGN'),
+// Schemas for the new Hotelbeds-like API
+
+const VendorPriceSchema = z.object({
+  price: z.number().nullable(),
+  tax: z.number().nullable(),
+  vendor: z.string().nullable(),
 });
 
-// Schema for the output of a single hotel from the tool
 const HotelSchema = z.object({
-  id: z.string().describe('Unique identifier for the hotel, also known as wakanowId.'),
-  name: z.string().describe('Name of the hotel.'),
-  location: z.string().describe('General location or address of the hotel.'),
-  price: z.number().describe('Average price per night.'),
-  rating: z.number().describe('Star rating of the hotel.'),
+  hotelName: z.string(),
+  hotelId: z.string(),
+  vendors: z.array(VendorPriceSchema),
 });
 
-// Schema for the output of the hotel search tool
+const HotelApiSearchInputSchema = z.object({
+  city: z.string().describe('The name of the city to search for hotels in.'),
+});
+
 const HotelApiSearchOutputSchema = z.object({
   hotels: z.array(HotelSchema),
 });
 
 /**
- * A Genkit tool that simulates calling an external hotel search API.
+ * A Genkit tool that simulates calling the Makcorps Free Hotel API.
+ * This tool internally handles the 2-step process:
+ * 1. Get an auth token.
+ * 2. Search for hotels with that token.
  */
 const searchHotels = ai.defineTool(
   {
     name: 'searchHotels',
-    description: 'Search for hotels based on destination, dates, and guests.',
+    description: 'Search for hotels in a specific city.',
     inputSchema: HotelApiSearchInputSchema,
     outputSchema: HotelApiSearchOutputSchema,
   },
-  async (input) => {
-    console.log('Simulating call to Wakanow SearchHotels API with input:', input);
-    // In a real implementation, you would:
-    // 1. Get a locationId from 'Select2' based on input.Destination
-    // 2. POST to 'SearchHotels' to get a searchKey
-    // 3. GET from 'SearchHotels/{searchKey}/{currency}' to get results.
-    return {
-      hotels: [
-        {
-          id: 'hotel-123',
-          name: 'Example Hotel Suites',
-          location: input.Destination,
-          price: 75000,
-          rating: 5,
-        },
-        {
-          id: 'hotel-456',
-          name: 'Budget Friendly Inn',
-          location: input.Destination,
-          price: 30000,
-          rating: 3,
-        },
-        {
-          id: 'hotel-789',
-          name: 'The Grand Resort',
-          location: input.Destination,
-          price: 120000,
-          rating: 5,
-        },
-      ],
+  async ({ city }) => {
+    console.log(`Simulating call to Makcorps API for city: ${city}`);
+    
+    // Step 1: Simulate Authentication to get JWT Token
+    // In a real app, replace with your actual username and password,
+    // and store the token securely.
+    const authPayload = {
+      username: "your_username", // IMPORTANT: Replace with your actual username
+      password: "your_password", // IMPORTANT: Replace with your actual password
     };
+
+    // This is a placeholder for the auth call. In a real scenario, you'd fetch() this.
+    const mockAuthResponse = {
+        access_token: 'dummy-jwt-token-for-simulation-purposes-only',
+    };
+    const accessToken = mockAuthResponse.access_token;
+
+
+    // Step 2: Simulate Hotel Search with the JWT Token
+    console.log(`Simulating GET request to https://api.makcorps.com/free/${city}`);
+    // In a real implementation, you would use fetch() with the Authorization header:
+    // const response = await fetch(`https://api.makcorps.com/free/${city}`, {
+    //   headers: {
+    //     'Authorization': `JWT ${accessToken}`
+    //   }
+    // });
+    // const data = await response.json();
+    
+    // Using mock data that matches the provided API response structure
+    const mockApiResponse = [
+      [
+        { "hotelName": "ITC Grand Central, Mumbai", "hotelId": "503409" },
+        [
+          { "price1": "180", "tax1": "27", "vendor1": "Booking.com" },
+          { "price2": "180", "tax2": "27", "vendor2": "Hotels.com" },
+          { "price4": "153", "tax4": "0", "vendor4": "Priceline" }
+        ]
+      ],
+      [
+        { "hotelName": "Bloom Hotel - Juhu", "hotelId": "23337279" },
+        [
+          { "price1": "72", "tax1": "8", "vendor1": "Booking.com" },
+          { "price2": "90", "tax2": "10", "vendor2": "Hotels.com" }
+        ]
+      ]
+    ];
+
+    // Helper function to parse the strange vendor price format
+    const parseVendors = (vendorArray: any[]) => {
+      const vendors: z.infer<typeof VendorPriceSchema>[] = [];
+      vendorArray.forEach(vendorObj => {
+        // Find all price/tax/vendor keys in the object
+        const keys = Object.keys(vendorObj);
+        const priceKeys = keys.filter(k => k.startsWith('price'));
+        priceKeys.forEach(priceKey => {
+            const index = priceKey.substring(5);
+            vendors.push({
+                price: vendorObj[priceKey] ? parseFloat(vendorObj[priceKey]) : null,
+                tax: vendorObj[`tax${index}`] ? parseFloat(vendorObj[`tax${index}`]) : null,
+                vendor: vendorObj[`vendor${index}`] || null,
+            });
+        });
+      });
+      return vendors;
+    };
+
+    const hotels = mockApiResponse.map(hotelEntry => {
+      const hotelInfo = hotelEntry[0] as { hotelName: string; hotelId: string; };
+      const vendorInfo = hotelEntry[1] as any[];
+      return {
+        hotelName: hotelInfo.hotelName,
+        hotelId: hotelInfo.hotelId,
+        vendors: parseVendors(vendorInfo),
+      };
+    });
+
+    return { hotels };
   }
 );
 
-
-const HotelStaticDataInputSchema = z.object({
-    location: z.string().describe("The location code or city of the hotel."),
-    wakanowId: z.string().describe("The Wakanow ID of the hotel.")
-});
-
-const HotelStaticDataOutputSchema = z.object({
-    name: z.string(),
-    description: z.string(),
-    amenities: z.array(z.string()),
-    address: z.string(),
-    phone: z.string().optional(),
-});
-
-/**
- * A Genkit tool to get detailed static data for a single hotel.
- */
-const getHotelStaticData = ai.defineTool({
-    name: 'getHotelStaticData',
-    description: 'Retrieves detailed static information for a specific hotel, such as description and amenities.',
-    inputSchema: HotelStaticDataInputSchema,
-    outputSchema: HotelStaticDataOutputSchema,
-}, async ({ wakanowId, location }) => {
-    console.log(`Simulating call to HotelStaticData API for hotel ${wakanowId} in ${location}`);
-    // In a real app, you would fetch from:
-    // https://wakanow-api-hotels-production-preprod.azurewebsites.net/api/hotels/HotelStaticData/${location}/${wakanowId}
-    
-    // Returning mock data for demonstration.
-    if (wakanowId === 'hotel-123') {
-        return {
-            name: 'Example Hotel Suites',
-            description: 'A luxurious 5-star hotel offering world-class services and comfort.',
-            amenities: ['Free WiFi', 'Swimming Pool', 'Gym', 'Spa', 'Restaurant'],
-            address: `123 Luxury Avenue, ${location}`,
-            phone: '123-456-7890'
-        }
-    }
-    return {
-        name: 'Unknown Hotel',
-        description: 'No details available for this hotel.',
-        amenities: [],
-        address: 'Unknown Address',
-    }
-});
 
 export const HotelSearchInputSchema = z.object({
   query: z.string().describe('The user\'s natural language query for finding hotels or hotel details.'),
@@ -144,32 +147,22 @@ const hotelSearchAgent = ai.defineFlow(
     name: 'hotelSearchAgent',
     inputSchema: HotelSearchInputSchema,
     outputSchema: HotelSearchOutputSchema,
-    tools: [searchHotels, getHotelStaticData],
+    tools: [searchHotels],
   },
   async (input) => {
-    // Get today's date to provide context to the model.
-    const today = new Date().toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    });
-
     const llmResponse = await ai.generate({
-      prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels and get details about them.
+      prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels.
 
-      - You have access to two tools: \`searchHotels\` and \`getHotelStaticData\`.
-      - Use \`searchHotels\` when the user wants to find a list of hotels.
-      - Use \`getHotelStaticData\` when the user asks for specific details (like amenities or description) about a particular hotel.
-      - To use \`getHotelStaticData\`, you need the hotel's ID (wakanowId) and location, which you can get from the \`searchHotels\` result.
-      - Analyze the user's query to extract the necessary information for the tools.
-      - Today's date is ${today}.
-      - If any information is missing to call a tool, you MUST ask the user for it. Do not make assumptions.
-      - When you get results from a tool, present them to the user in a clear and helpful summary.
+      - You have access to one tool: \`searchHotels\`.
+      - Use \`searchHotels\` when the user wants to find a list of hotels in a city.
+      - To use the tool, you need the city name.
+      - If the city is missing from the user's query, you MUST ask for it. Do not make assumptions or call the tool without it.
+      - When you get results from the tool, present them to the user in a clear and helpful summary. List the hotel names and the prices available from different vendors.
 
       User Query: ${input.query}
       `,
       model: 'googleai/gemini-2.5-flash',
-      tools: [searchHotels, getHotelStaticData],
+      tools: [searchHotels],
       toolConfig: {
         client: 'genkit'
       }
@@ -185,7 +178,7 @@ const hotelSearchAgent = ai.defineFlow(
       }
 
       const finalResponse = await ai.generate({
-          prompt: `Please summarize the results from the tool call(s) in a friendly and helpful way.`,
+          prompt: `Please summarize the results from the tool call(s) in a friendly and helpful way. For each hotel, list its name and the different price options from the vendors.`,
           history: [
               { role: 'user', content: input.query },
               llmResponse.message, 
