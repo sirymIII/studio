@@ -27,6 +27,9 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -44,6 +47,7 @@ import { deleteHotel } from '@/app/admin/hotels/actions';
 import type { Hotel } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useDebounce } from 'use-debounce';
+import Link from 'next/link';
 
 export function HotelsTable({ data }: { data: Hotel[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -97,7 +101,14 @@ export function HotelsTable({ data }: { data: Hotel[] }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuCheckboxItem
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                   <Link href={`/admin/hotels/edit/${hotel.id}`}>
+                    Edit
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
                   onClick={() => {
                     setHotelToDelete(hotel.id);
                     setShowDeleteAlert(true);
@@ -105,7 +116,7 @@ export function HotelsTable({ data }: { data: Hotel[] }) {
                   className="text-destructive focus:text-destructive"
                 >
                   Delete
-                </DropdownMenuCheckboxItem>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

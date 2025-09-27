@@ -22,12 +22,17 @@ export type Destination = z.infer<typeof DestinationSchema> & {
   };
 };
 
-export type Hotel = {
+export const HotelSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  location: z.string().min(2, 'Location must be at least 2 characters'),
+  price: z.coerce.number().min(0, 'Price cannot be negative'),
+  rating: z.coerce.number().min(1, 'Rating must be at least 1').max(5, 'Rating cannot be more than 5'),
+});
+
+
+export type Hotel = z.infer<typeof HotelSchema> & {
   id: string;
-  name: string;
-  location: string;
-  price: number;
-  rating: number;
   image: {
     id: string;
     hint: string;
