@@ -11,7 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const AIItineraryPlannerInputSchema = z.object({
+const AIItineraryPlannerInputSchema = z.object({
   destination: z.string().describe('The travel destination (e.g., city or region).'),
   durationDays: z.number().int().min(1).describe('The duration of the trip in days.'),
   interests: z.array(z.string()).describe('A list of user interests to tailor the itinerary (e.g., "history", "nature", "foodie", "relaxation").'),
@@ -30,7 +30,7 @@ const DailyPlanSchema = z.object({
   activities: z.array(ActivitySchema).describe('A list of activities planned for the day.'),
 });
 
-export const AIItineraryPlannerOutputSchema = z.object({
+const AIItineraryPlannerOutputSchema = z.object({
   itineraryTitle: z.string().describe("A catchy title for the generated itinerary."),
   dailyPlans: z.array(DailyPlanSchema).describe('An array of day-by-day plans.'),
   summary: z.string().describe("A brief, encouraging summary of the trip ahead."),
