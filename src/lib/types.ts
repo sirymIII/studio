@@ -58,20 +58,9 @@ const BasicInfoSchema = z.object({
   profilePictureUrl: z.string().url().optional().nullable(),
 });
 
-const TravelPreferencesSchema = z.object({
-  preferredDestinations: z.array(z.string()).optional(),
-  travelInterests: z.array(z.string()).optional(),
-  budgetRange: z.enum(['economy', 'mid-range', 'luxury']).optional(),
-  preferredAccommodation: z.enum(['Hotel', 'Resort', 'Guest House', 'Airbnb', 'Hostel']).optional(),
-  languagePreference: z.string().optional(),
-});
-
 export const UserProfileSchema = z.object({
   userId: z.string(),
   basicInfo: BasicInfoSchema,
-  travelPreferences: TravelPreferencesSchema,
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
 });
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;

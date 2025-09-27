@@ -371,92 +371,6 @@
         "message",
         "createdAt"
       ]
-    },
-    "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "UserProfile",
-      "type": "object",
-      "description": "Represents a user's profile information.",
-      "properties": {
-        "userId": {
-          "type": "string",
-          "description": "Unique identifier for the user, matching Firebase Auth UID."
-        },
-        "basicInfo": {
-          "type": "object",
-          "properties": {
-            "fullName": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "phoneNumber": {
-              "type": "string"
-            },
-            "dateOfBirth": {
-              "type": "string",
-              "format": "date"
-            },
-            "nationality": {
-              "type": "string"
-            },
-            "profilePictureUrl": {
-              "type": "string",
-              "format": "uri"
-            }
-          }
-        },
-        "travelPreferences": {
-          "type": "object",
-          "properties": {
-            "preferredDestinations": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "travelInterests": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "budgetRange": {
-              "type": "string",
-              "enum": [
-                "economy",
-                "mid-range",
-                "luxury"
-              ]
-            },
-            "preferredAccommodation": {
-              "type": "string",
-              "enum": [
-                "Hotel",
-                "Resort",
-                "Guest House",
-                "Airbnb",
-                "Hostel"
-              ]
-            },
-            "languagePreference": {
-              "type": "string"
-            }
-          }
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "userId"
-      ]
     }
   },
   "auth": {
@@ -610,26 +524,8 @@
             }
           ]
         }
-      },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile data, keyed by the user's Firebase Auth UID.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching their Firebase Auth UID."
-            }
-          ]
-        }
       }
     ],
     "reasoning": "The Firestore structure is designed to organize tourist destinations in Nigeria, along with associated data like hotels, transport options, and media. It prioritizes authorization independence and supports secure list operations by adhering to the core design principles outlined. Specifically, the design ensures that security rules do not rely on hierarchical `get()` calls and that authorization context is denormalized for atomic operations.\n\n1.  **Authorization Independence**: Achieved primarily through denormalization. For instance, the `destinations` collection includes a `createdBy` field, enabling access control based on the user who created the destination, without needing to fetch additional data from a parent document.  Admin role is assumed by the existance of the document under `/roles_admin/{uid}`.\n2.  **Clarity of Intent**: Each collection is dedicated to a specific entity, clearly defining its purpose. The naming conventions are semantic, and the use of a `status` field (if implemented in the future) would make state transitions explicit.\n3.  **DBAC (No Custom Claims)**: Relies solely on `request.auth.uid` and existence check for admin roles.\n4.  **QAPs**: Supported through structural segregation and membership models where appropriate. For example, listing destinations is secure because the rules can filter based on the `createdBy` field or the existance of the user id on the `/roles_admin/{uid}` path.\n5.  **Invariants**: The structure allows enforcing invariants like ownership by checking the `createdBy` field when creating or updating destinations. Timestamps can be validated using server-side timestamps to ensure accuracy.\n\n*   `/states`: Stores states with their IDs and names.\n*   `/destinations`: Stores tourist destinations with detailed information, including references to related hotels, transport options, and media. The `createdBy` field enables ownership-based access control. Includes `stateId` for filtering by state.\n*   `/hotels`: Stores hotel information, linked to destinations via `destinationId` and `stateId`. This allows efficient querying of hotels for a specific destination or state.\n*   `/transport_options`: Stores transport options for reaching destinations, linked by `destinationId`. This enables querying transport options for a particular destination.\n*   `/transport_hubs`: Stores transport hubs (airports, stations), categorized by `stateId`.\n*   `/destination_hubs`: Defines the relationship between destinations and transport hubs, including distance and travel time. Useful for providing travel directions.\n*   `/destination_media`: Stores media (photo URLs) associated with destinations. Linked to destinations via `destinationId`.\n*   `/roles_admin/{uid}`: Represents admin roles. The existance of a document indicates admin status. Used for authorization in create/update/delete operations.\n*   `/contact_messages`: Stores messages submitted from the contact form. Can be read by admins.\n\nThis structure enables efficient queries, secure access control, and easy management of tourist destination data."
   }
 }
-
-    
