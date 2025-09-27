@@ -23,7 +23,6 @@ export function AdminSidebar() {
     { href: '/admin', label: 'Dashboard', icon: Home },
     { href: '/admin/destinations', label: 'Destinations', icon: MapPin },
     { href: '/admin/hotels', label: 'Hotels', icon: Bed },
-    { href: '/admin/users', label: 'Users', icon: Users },
   ];
 
   return (
@@ -41,7 +40,7 @@ export function AdminSidebar() {
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   tooltip={{ children: item.label }}
                 >
                   <Link href={item.href}>
