@@ -2,71 +2,34 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper function to check if a user is an admin
+    
     function isAdmin() {
       return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    // States are publically readable
     match /states/{stateId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read;
     }
 
-    // Destinations can be read by anyone, but only created/updated/deleted by admins
     match /destinations/{destinationId} {
-      allow read: if true;
+      allow read;
       allow create, update, delete: if isAdmin();
     }
 
-    // Hotels can be read by anyone, but only managed by admins
     match /hotels/{hotelId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    // Transport options can be read by anyone, but only managed by admins
-    match /transport_options/{transportOptionId} {
-      allow read: if true;
+      allow read;
       allow create, update, delete: if isAdmin();
     }
     
-    // Transport hubs can be read by anyone, but only managed by admins
-    match /transport_hubs/{transportHubId} {
-        allow read: if true;
-        allow create, update, delete: if isAdmin();
-    }
-    
-    // Destination hubs can be read by anyone, but only managed by admins
-    match /destination_hubs/{destinationHubId} {
-        allow read: if true;
-        allow create, update, delete: if isAdmin();
-    }
-    
-    // Destination media can be read by anyone, but only managed by admins
-    match /destination_media/{destinationMediaId} {
-        allow read: if true;
-        allow create, update, delete: if isAdmin();
-    }
-
-    // Only admins can read contact messages
     match /contact_messages/{messageId} {
-      allow read, list: if isAdmin();
-      allow create: if true; // Anyone can submit a message
+      allow create;
+      allow read, list, update, delete: if isAdmin();
     }
 
-    // User can read and write their own profile
+    // This is the corrected rule for user profiles.
+    // It allows a user to read and write to their own document, but no one else's.
     match /users/{userId} {
-      allow read, write: if request.auth.uid == userId;
-    }
-
-    // Admin roles can only be read or written by other admins (for management)
-    // This is a simplified rule; in production, you might restrict creation more tightly
-    match /roles_admin/{userId} {
-      allow read, write: if isAdmin();
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
-
-    
