@@ -27,6 +27,9 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -44,6 +47,7 @@ import { deleteDestination } from '@/app/admin/destinations/actions';
 import type { Destination } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useDebounce } from 'use-debounce';
+import Link from 'next/link';
 
 export function DestinationsTable({ data }: { data: Destination[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -87,7 +91,14 @@ export function DestinationsTable({ data }: { data: Destination[] }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuCheckboxItem
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link href={`/admin/destinations/edit/${destination.id}`}>
+                    Edit
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
                   onClick={() => {
                     setDestinationToDelete(destination.id);
                     setShowDeleteAlert(true);
@@ -95,7 +106,7 @@ export function DestinationsTable({ data }: { data: Destination[] }) {
                   className="text-destructive focus:text-destructive"
                 >
                   Delete
-                </DropdownMenuCheckboxItem>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
