@@ -157,7 +157,7 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
 
   const toolCalls = llmResponse.toolCalls;
 
-  if (toolCalls.length > 0) {
+  if (toolCalls && toolCalls.length > 0) {
     const toolResults = [];
     for (const call of toolCalls) {
       const toolResult = await call.run();
