@@ -35,9 +35,13 @@ export default function AdminLayout({
   // This check prevents a brief flash of the admin content for non-admin users.
   if (user && user.email === ADMIN_EMAIL) {
     return (
-      <div className="flex min-h-screen">
+        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <AdminSidebar />
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <div className="flex flex-col">
+          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+            {children}
+          </main>
+        </div>
       </div>
     );
   }
