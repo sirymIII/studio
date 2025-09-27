@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -39,7 +38,7 @@ export function ProfileForm({ user, profile }: { user: User, profile: UserProfil
   const { isSubmitting } = form.formState;
 
   async function onSubmit(data: UserProfileFormData) {
-    const result = await updateUserProfile(data);
+    const result = await updateUserProfile(data, user.uid);
 
     if (result.success) {
       toast({
