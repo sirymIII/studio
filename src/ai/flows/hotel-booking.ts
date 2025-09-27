@@ -172,6 +172,7 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
         llmResponse.message,
         { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) },
       ],
+      model: 'googleai/gemini-2.5-flash',
     });
 
     return {

@@ -56,6 +56,7 @@ const prompt = ai.definePrompt({
   name: 'aiRoutePlanningPrompt',
   input: {schema: AIRoutePlanningInputSchema},
   output: {schema: AIRoutePlanningOutputSchema},
+  model: 'googleai/gemini-2.5-flash',
   prompt: `You are a travel planning expert specializing in routes within Nigeria.
 
 Based on the user's origin, destination, preferred transport modes, budget, and desired departure time, provide a detailed route plan.

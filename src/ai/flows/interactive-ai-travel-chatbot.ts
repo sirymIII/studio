@@ -30,6 +30,7 @@ const prompt = ai.definePrompt({
   name: 'interactiveAITravelChatbotPrompt',
   input: {schema: InteractiveAITravelChatbotInputSchema},
   output: {schema: InteractiveAITravelChatbotOutputSchema},
+  model: 'googleai/gemini-2.5-flash',
   prompt: `You are a helpful AI travel chatbot for a tourism website in Nigeria called TourNaija.
 
 You will answer questions about destinations in Nigeria.

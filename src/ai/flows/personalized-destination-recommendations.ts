@@ -53,6 +53,7 @@ const personalizedDestinationRecommendationsPrompt = ai.definePrompt({
   name: 'personalizedDestinationRecommendationsPrompt',
   input: {schema: PersonalizedDestinationRecommendationsInputSchema},
   output: {schema: PersonalizedDestinationRecommendationsOutputSchema},
+  model: 'googleai/gemini-2.5-flash',
   prompt: `You are an AI travel assistant specializing in Nigerian tourism.
 
   Based on the user's city of origin, budget, and interests, provide a list of personalized destination recommendations in Nigeria.
