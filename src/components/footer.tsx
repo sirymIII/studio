@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Twitter, Instagram, Facebook } from 'lucide-react';
 import { Logo } from './icons';
 
 export function Footer() {
@@ -15,15 +14,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} TourNaija. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Twitter className="h-5 w-5" />
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Instagram className="h-5 w-5" />
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary">
-              <Facebook className="h-5 w-5" />
-            </Link>
+            {/* Social media links removed as requested */}
           </div>
         </div>
       </div>
