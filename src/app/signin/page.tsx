@@ -16,6 +16,9 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useAuth, initiateEmailSignIn } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
+const ADMIN_EMAIL = 'mukhtar6369@bazeuniversity.edu.ng';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -29,12 +32,16 @@ export default function SignInPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      initiateEmailSignIn(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: 'Success',
         description: 'Signed in successfully!',
       });
-      router.push('/');
+      if (email === ADMIN_EMAIL) {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } catch (error: any) {
       toast({
         title: 'Error signing in',

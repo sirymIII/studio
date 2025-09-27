@@ -39,9 +39,6 @@ export function Header() {
           <Link href="/about" className="transition-colors hover:text-primary">
             About
           </Link>
-          <Link href="/admin" className="transition-colors hover:text-primary">
-            Admin
-          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <Button variant="ghost" asChild>
