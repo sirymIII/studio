@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A flow for searching for hotels using an external API.
+ * @fileOverview A flow for searching for hotels and retrieving hotel details.
  *
  * - searchHotelsFlow - A function that handles the hotel search process.
  * - HotelSearchInput - The input type for the hotel search.
@@ -22,7 +22,7 @@ const HotelApiSearchInputSchema = z.object({
 
 // Schema for the output of a single hotel from the tool
 const HotelSchema = z.object({
-  id: z.string().describe('Unique identifier for the hotel.'),
+  id: z.string().describe('Unique identifier for the hotel, also known as wakanowId.'),
   name: z.string().describe('Name of the hotel.'),
   location: z.string().describe('General location or address of the hotel.'),
   price: z.number().describe('Average price per night.'),
@@ -36,7 +36,6 @@ const HotelApiSearchOutputSchema = z.object({
 
 /**
  * A Genkit tool that simulates calling an external hotel search API.
- * In a real application, this is where you would make the `fetch` call.
  */
 const searchHotels = ai.defineTool(
   {
@@ -46,15 +45,11 @@ const searchHotels = ai.defineTool(
     outputSchema: HotelApiSearchOutputSchema,
   },
   async (input) => {
-    console.log('Simulating call to Wakanow API with input:', input);
-
-    // In a real implementation, you would make the fetch request here.
-    // This process might involve multiple steps:
-    // 1. Get a locationId from an endpoint like 'Select2' based on input.Destination
-    // 2. POST to 'SearchHotels' to initiate the search and get a searchKey
-    // 3. GET from 'SearchHotels/{searchKey}/{currency}' to get the results.
-
-    // For now, we return mock data that matches the output schema.
+    console.log('Simulating call to Wakanow SearchHotels API with input:', input);
+    // In a real implementation, you would:
+    // 1. Get a locationId from 'Select2' based on input.Destination
+    // 2. POST to 'SearchHotels' to get a searchKey
+    // 3. GET from 'SearchHotels/{searchKey}/{currency}' to get results.
     return {
       hotels: [
         {
@@ -83,8 +78,53 @@ const searchHotels = ai.defineTool(
   }
 );
 
+
+const HotelStaticDataInputSchema = z.object({
+    location: z.string().describe("The location code or city of the hotel."),
+    wakanowId: z.string().describe("The Wakanow ID of the hotel.")
+});
+
+const HotelStaticDataOutputSchema = z.object({
+    name: z.string(),
+    description: z.string(),
+    amenities: z.array(z.string()),
+    address: z.string(),
+    phone: z.string().optional(),
+});
+
+/**
+ * A Genkit tool to get detailed static data for a single hotel.
+ */
+const getHotelStaticData = ai.defineTool({
+    name: 'getHotelStaticData',
+    description: 'Retrieves detailed static information for a specific hotel, such as description and amenities.',
+    inputSchema: HotelStaticDataInputSchema,
+    outputSchema: HotelStaticDataOutputSchema,
+}, async ({ wakanowId, location }) => {
+    console.log(`Simulating call to HotelStaticData API for hotel ${wakanowId} in ${location}`);
+    // In a real app, you would fetch from:
+    // https://wakanow-api-hotels-production-preprod.azurewebsites.net/api/hotels/HotelStaticData/${location}/${wakanowId}
+    
+    // Returning mock data for demonstration.
+    if (wakanowId === 'hotel-123') {
+        return {
+            name: 'Example Hotel Suites',
+            description: 'A luxurious 5-star hotel offering world-class services and comfort.',
+            amenities: ['Free WiFi', 'Swimming Pool', 'Gym', 'Spa', 'Restaurant'],
+            address: `123 Luxury Avenue, ${location}`,
+            phone: '123-456-7890'
+        }
+    }
+    return {
+        name: 'Unknown Hotel',
+        description: 'No details available for this hotel.',
+        amenities: [],
+        address: 'Unknown Address',
+    }
+});
+
 export const HotelSearchInputSchema = z.object({
-  query: z.string().describe('The user\'s natural language query for finding hotels.'),
+  query: z.string().describe('The user\'s natural language query for finding hotels or hotel details.'),
 });
 export type HotelSearchInput = z.infer<typeof HotelSearchInputSchema>;
 
@@ -104,7 +144,7 @@ const hotelSearchAgent = ai.defineFlow(
     name: 'hotelSearchAgent',
     inputSchema: HotelSearchInputSchema,
     outputSchema: HotelSearchOutputSchema,
-    tools: [searchHotels],
+    tools: [searchHotels, getHotelStaticData],
   },
   async (input) => {
     // Get today's date to provide context to the model.
@@ -115,55 +155,50 @@ const hotelSearchAgent = ai.defineFlow(
     });
 
     const llmResponse = await ai.generate({
-      prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels.
+      prompt: `You are an AI assistant for a travel website. Your task is to help users find hotels and get details about them.
 
-      - You have access to a \`searchHotels\` tool.
-      - Analyze the user's query to extract the necessary information: destination, check-in date, check-out date, and number of guests.
+      - You have access to two tools: \`searchHotels\` and \`getHotelStaticData\`.
+      - Use \`searchHotels\` when the user wants to find a list of hotels.
+      - Use \`getHotelStaticData\` when the user asks for specific details (like amenities or description) about a particular hotel.
+      - To use \`getHotelStaticData\`, you need the hotel's ID (wakanowId) and location, which you can get from the \`searchHotels\` result.
+      - Analyze the user's query to extract the necessary information for the tools.
       - Today's date is ${today}.
-      - If any information is missing, you MUST ask the user for it. Do not make assumptions about dates, guest counts, or destinations.
-      - Once you have all the necessary information, call the \`searchHotels\` tool.
-      - When you get the results from the tool, present them to the user in a clear and helpful summary. For example: "I found 3 great hotels for you in Lagos. The Example Hotel Suites is a 5-star hotel for ₦75,000 per night...".
-      - If no hotels are found, inform the user gracefully.
+      - If any information is missing to call a tool, you MUST ask the user for it. Do not make assumptions.
+      - When you get results from a tool, present them to the user in a clear and helpful summary.
 
       User Query: ${input.query}
       `,
       model: 'googleai/gemini-2.5-flash',
-      tools: [searchHotels],
+      tools: [searchHotels, getHotelStaticData],
       toolConfig: {
-        client: 'genkit' // Use Genkit's tool client
+        client: 'genkit'
       }
     });
 
-    // Check if the model decided to call the searchHotels tool.
     const toolCalls = llmResponse.toolCalls();
 
     if (toolCalls.length > 0) {
       const toolResults = [];
       for (const call of toolCalls) {
-        // Execute the tool call (in this case, our mock API)
         const toolResult = await call.run();
         toolResults.push(toolResult);
       }
 
-      // Send the tool results back to the model to generate a human-friendly summary.
       const finalResponse = await ai.generate({
-          prompt: `Please summarize the results from the hotel search in a friendly and helpful way. List the hotel names, prices, and ratings.`,
+          prompt: `Please summarize the results from the tool call(s) in a friendly and helpful way.`,
           history: [
               { role: 'user', content: input.query },
-              llmResponse.message, // The model's message that included the tool call
-              { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) } // The results from running the tool
+              llmResponse.message, 
+              { role: 'tool', content: toolResults.map(r => ({...r.output, tool: r.tool})) }
           ]
       });
 
-      // The final output includes the raw hotel data and the AI-generated summary.
       return {
-        hotels: toolResults[0]?.output?.hotels || [],
+        hotels: toolResults.find(r => r.tool === 'searchHotels')?.output?.hotels || [],
         searchSummary: finalResponse.text(),
       };
     }
 
-    // If the model did not call a tool, it's likely asking for more information.
-    // Return the model's question directly to the user.
     return {
       searchSummary: llmResponse.text(),
     };

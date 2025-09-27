@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A flow for validating and booking a hotel reservation.
+ * @fileOverview A flow for validating and booking a hotel reservation and retrieving booking details.
  *
  * - hotelBookingAgent - An AI agent that handles the hotel booking process.
  * - HotelBookingInput - The input type for the hotel booking agent.
@@ -66,11 +66,8 @@ const validateHotelBooking = ai.defineTool(
   },
   async (input) => {
     console.log('Simulating call to Wakanow booking validation API with input:', input);
-    // In a real implementation, you would make the POST request here to:
+    // In a real implementation, you would POST to:
     // https://wakanow-api-hotels-production-preprod.azurewebsites.net/api/hotel/validate
-    // with the `input` as the JSON body.
-
-    // For now, we'll simulate a successful validation.
     if (input.PassengerDetails.length > 0 && input.bookingItemModels.length > 0) {
       return {
         success: true,
@@ -87,9 +84,45 @@ const validateHotelBooking = ai.defineTool(
 );
 
 
+const BookingDetailsInputSchema = z.object({
+    bookingId: z.string().describe("The ID of the booking to retrieve.")
+});
+
+const BookingDetailsOutputSchema = z.object({
+    status: z.string(),
+    hotelName: z.string(),
+    checkInDate: z.string(),
+    checkOutDate: z.string(),
+    totalAmount: z.number()
+});
+
+
+/**
+ * A Genkit tool to get details for an existing booking.
+ */
+const getBookingDetails = ai.defineTool({
+    name: 'getBookingDetails',
+    description: 'Retrieves the status and details of a specific hotel booking by its ID.',
+    inputSchema: BookingDetailsInputSchema,
+    outputSchema: BookingDetailsOutputSchema,
+}, async ({ bookingId }) => {
+    console.log(`Simulating API call to get details for booking ID: ${bookingId}`);
+    // In a real app, you would fetch from an endpoint like:
+    // http://<host>/api/hotel/Booking/id/${bookingId}
+
+    // Returning mock data.
+    return {
+        status: 'Confirmed',
+        hotelName: 'Example Hotel Suites',
+        checkInDate: '2023-11-05',
+        checkOutDate: '2023-11-08',
+        totalAmount: 225000
+    }
+});
+
+
 export const HotelBookingInputSchema = z.object({
-  query: z.string().describe('The user\'s natural language query for booking a hotel.'),
-  // In a real app, you'd pass context from the search results, like the BookingData string.
+  query: z.string().describe('The user\'s natural language query for booking a hotel or checking a booking status.'),
   bookingContext: z.object({
     BookingData: z.string(),
     BookingId: z.string(),
@@ -108,17 +141,18 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
   const llmResponse = await ai.generate({
     prompt: `You are a hotel booking assistant.
     
-    - Your goal is to collect all necessary passenger details to call the \`validateHotelBooking\` tool.
-    - The required details are: First Name, Last Name, Date of Birth, Phone Number, Address, Email, Gender, Title, and Country.
-    - If the user has provided a booking context (BookingData and BookingId), use it.
-    - If any information is missing, you MUST ask the user for it. Do not make up details.
-    - Once you have all the required information, call the \`validateHotelBooking\` tool.
-    - After calling the tool, summarize the result for the user.
+    - Your goal is to help users book a hotel or check the status of an existing booking.
+    - You have two tools: \`validateHotelBooking\` and \`getBookingDetails\`.
+    - Use \`validateHotelBooking\` to create a new booking. To call it, you need passenger details: First Name, Last Name, DOB, Phone, Address, Email, Gender, Title, and Country.
+    - Use \`getBookingDetails\` to check the status of an existing booking. You need a \`bookingId\`.
+    - If any information is missing for a tool, you MUST ask the user for it. Do not make up details.
+    - Once you have the required information, call the appropriate tool.
+    - After calling a tool, summarize the result for the user.
 
     User Query: ${input.query}
     `,
     model: 'googleai/gemini-2.5-flash',
-    tools: [validateHotelBooking],
+    tools: [validateHotelBooking, getBookingDetails],
   });
 
   const toolCalls = llmResponse.toolCalls();
@@ -132,7 +166,7 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
 
     // Send the results back to the model for a final summary
     const finalResponse = await ai.generate({
-      prompt: `The booking validation is complete. Please present the final status to the user based on the tool's output.`,
+      prompt: `The operation is complete. Please present the final status to the user based on the tool's output.`,
       history: [
         { role: 'user', content: input.query },
         llmResponse.message,
@@ -141,7 +175,7 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
     });
 
     return {
-      bookingConfirmation: toolResults[0]?.output,
+      bookingConfirmation: toolResults.find(r => r.tool === 'validateHotelBooking')?.output,
       responseText: finalResponse.text(),
     };
   }
