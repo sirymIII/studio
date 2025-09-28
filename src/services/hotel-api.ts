@@ -1,61 +1,94 @@
+
 'use server';
 
-import type { Hotel } from '@/lib/types';
+import { HotelSchema, VendorPriceSchema } from '@/ai/flows/hotel-schemas';
+import { z } from 'zod';
 
-const API_BASE_URL = process.env.HOTEL_API_ENDPOINT || 'https://api.example.com'; // Replace with your actual API endpoint
-const API_KEY = process.env.HOTEL_API_KEY; // Store your API key in environment variables
+const API_BASE_URL = 'https://api.makcorps.com';
+const USERNAME = 'mjavason'; // As per the API documentation/example
 
 /**
- * Fetches hotel data from a third-party API.
- * This is an example function to demonstrate how to integrate with an external hotel API.
+ * Fetches hotel data from the Makcorps Free Hotel API.
+ * This function handles the two-step process of getting a token and then fetching hotels.
  *
- * @returns {Promise<Hotel[]>} A list of hotels.
+ * @param {string} city - The city to search for hotels in.
+ * @returns {Promise<z.infer<typeof HotelSchema>[]>} A list of hotels.
  */
-export async function fetchHotelsFromApi(): Promise<Hotel[]> {
-  if (!API_KEY) {
-    console.error('Hotel API key is not configured.');
-    // In a real app, you might want to return a default value or throw a more specific error.
-    return [];
+export async function fetchHotelsFromApi(city: string): Promise<z.infer<typeof HotelSchema>[]> {
+  const apiKey = process.env.HOTEL_API_KEY;
+
+  if (!apiKey) {
+    console.error('Hotel API key is not configured in .env file.');
+    throw new Error('Hotel API key is missing.');
   }
 
-  const endpoint = `${API_BASE_URL}/hotel-content-api/1.0/hotels?fields=all&language=ENG&from=1&to=10`;
-
   try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
+    // Step 1: Get Authentication Token
+    const authResponse = await fetch(`${API_BASE_URL}/security/authenticate`, {
+      method: 'POST',
       headers: {
-        'Api-key': API_KEY,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
       },
-      // cache: 'no-store' // Use this if the data is highly dynamic
-      next: { revalidate: 3600 } // Revalidate data every hour
+      body: JSON.stringify({
+        username: USERNAME,
+        password: apiKey,
+      }),
     });
 
-    if (!response.ok) {
-      // Log the error for debugging purposes
-      const errorBody = await response.text();
-      console.error(`API request failed with status ${response.status}: ${errorBody}`);
-      throw new Error(`Failed to fetch hotel data. Status: ${response.status}`);
+    if (!authResponse.ok) {
+      console.error(`API auth failed with status ${authResponse.status}`);
+      throw new Error(`Failed to authenticate with hotel API. Status: ${authResponse.status}`);
     }
 
-    const data = await response.json();
+    const authData = await authResponse.json();
+    const accessToken = authData.access_token;
 
-    // The mapping logic below is a placeholder.
-    // You will need to adapt it to the actual structure of your API's response.
-    // For example, if the API returns an array of hotels in `data.hotels`.
-    const hotels: Hotel[] = data.hotels.map((apiHotel: any) => {
+    if (!accessToken) {
+      throw new Error('Access token not found in API response.');
+    }
+
+    // Step 2: Search for Hotels with the Token
+    const hotelResponse = await fetch(`${API_BASE_URL}/free/${city}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `JWT ${accessToken}`,
+      },
+      next: { revalidate: 3600 }, // Revalidate data every hour
+    });
+
+    if (!hotelResponse.ok) {
+      console.error(`Hotel search API request failed with status ${hotelResponse.status}`);
+      throw new Error(`Failed to fetch hotel data. Status: ${hotelResponse.status}`);
+    }
+
+    const rawHotelData = await hotelResponse.json();
+
+    // Helper function to parse the vendor price format from the API
+    const parseVendors = (vendorArray: any[]): z.infer<typeof VendorPriceSchema>[] => {
+      const vendors: z.infer<typeof VendorPriceSchema>[] = [];
+      vendorArray.forEach(vendorObj => {
+        const keys = Object.keys(vendorObj);
+        const priceKeys = keys.filter(k => k.startsWith('price'));
+        priceKeys.forEach(priceKey => {
+            const index = priceKey.substring(5);
+            vendors.push({
+                price: vendorObj[priceKey] ? parseFloat(vendorObj[priceKey]) : null,
+                tax: vendorObj[`tax${index}`] ? parseFloat(vendorObj[`tax${index}`]) : null,
+                vendor: vendorObj[`vendor${index}`] || null,
+            });
+        });
+      });
+      return vendors;
+    };
+
+    // Map the raw API data to our application's Hotel schema
+    const hotels: z.infer<typeof HotelSchema>[] = rawHotelData.map((hotelEntry: any) => {
+      const hotelInfo = hotelEntry[0] as { hotelName: string; hotelId: string; };
+      const vendorInfo = hotelEntry[1] as any[];
       return {
-        id: apiHotel.code,
-        name: apiHotel.name.content,
-        location: `${apiHotel.city.content}, ${apiHotel.country.content}`,
-        // These fields are placeholders and need to be mapped from your API response
-        price: apiHotel.minRate || 0,
-        rating: apiHotel.categoryCode ? parseInt(apiHotel.categoryCode.replace('ST', '')) : 0,
-        image: {
-          id: `hotel-api-${apiHotel.code}`,
-          hint: 'hotel exterior',
-        },
+        hotelName: hotelInfo.hotelName,
+        hotelId: hotelInfo.hotelId,
+        vendors: parseVendors(vendorInfo),
       };
     });
 
@@ -63,8 +96,7 @@ export async function fetchHotelsFromApi(): Promise<Hotel[]> {
 
   } catch (error) {
     console.error('An error occurred while fetching from the hotel API:', error);
-    // Depending on your error handling strategy, you could return an empty array,
-    // or re-throw the error to be handled by the caller.
+    // Return empty array on failure so the app doesn't crash
     return [];
   }
 }
