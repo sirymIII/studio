@@ -1,11 +1,11 @@
-'use client';
-import { useState, useEffect } from 'react';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useEffect, useState } from 'react';
 
 // The metadata is still handled by Next.js at build time and on the server.
 export const metadata: Metadata = {
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
  * only after the initial render to avoid hydration mismatches.
  */
 function BodyClassManager() {
+  'use client';
   const isMobile = useIsMobile();
   const [isMounted, setIsMounted] = useState(false);
 
