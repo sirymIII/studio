@@ -30,7 +30,6 @@ import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Hotels } from '@/components/hotels';
-import { Chatbot } from '@/components/chatbot';
 import Link from 'next/link';
 import { useHotels } from '@/services/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -173,8 +172,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
-        <Chatbot />
 
       </main>
       <Footer />

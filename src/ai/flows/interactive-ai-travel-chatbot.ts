@@ -13,7 +13,7 @@ import {z} from 'genkit';
 
 const InteractiveAITravelChatbotInputSchema = z.object({
   query: z.string().describe('The user query.'),
-  destinationContext: z.string().optional().describe('The ID of the destination the user is currently viewing, if any.'),
+  destinationContext: z.string().optional().describe('The name of the destination the user is currently viewing, if any.'),
 });
 export type InteractiveAITravelChatbotInput = z.infer<typeof InteractiveAITravelChatbotInputSchema>;
 
@@ -37,8 +37,10 @@ You will answer questions about destinations in Nigeria.
 
 {{#if destinationContext}}
 You have information about the current destination the user is viewing.
-Destination ID: {{{destinationContext}}}
-Use this context to provide more relevant answers.
+Current Destination: {{{destinationContext}}}
+Use this context to provide more relevant answers about this specific location.
+{{else}}
+Answer general questions about travel and tourism in Nigeria.
 {{/if}}
 
 User Query: {{{query}}}

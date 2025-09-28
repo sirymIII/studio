@@ -6,14 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { interactiveAITravelChatbot } from '@/ai/flows/interactive-ai-travel-chatbot';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 
 interface Message {
   text: string;
   isUser: boolean;
 }
 
-export function Chatbot() {
+interface ChatbotProps {
+  destinationContext?: string;
+  promptPlaceholder?: string;
+}
+
+export function Chatbot({ destinationContext, promptPlaceholder }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +32,10 @@ export function Chatbot() {
     setIsLoading(true);
 
     try {
-      const result = await interactiveAITravelChatbot({ query: input });
+      const result = await interactiveAITravelChatbot({
+        query: input,
+        destinationContext: destinationContext,
+      });
       const botMessage: Message = { text: result.response, isUser: false };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -54,6 +62,23 @@ export function Chatbot() {
           </CardHeader>
           <CardContent>
             <div className="h-80 overflow-y-auto pr-4 space-y-4 mb-4 border-b pb-4">
+               {messages.length === 0 && (
+                <div className="flex items-start gap-3">
+                   <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        <Bot />
+                      </AvatarFallback>
+                    </Avatar>
+                     <div className="rounded-lg px-4 py-2 bg-muted">
+                        <p className="text-sm">
+                           {destinationContext 
+                                ? `Ready to explore ${destinationContext}? Ask me anything!`
+                                : "Have a question about tourism in Nigeria? Ask away!"
+                           }
+                        </p>
+                    </div>
+                </div>
+              )}
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -69,7 +94,7 @@ export function Chatbot() {
                     </Avatar>
                   )}
                   <div
-                    className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                    className={`rounded-lg px-4 py-2 max-w-[80%] break-words ${
                       message.isUser
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
@@ -97,7 +122,7 @@ export function Chatbot() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Ask about destinations..."
+                placeholder={promptPlaceholder || "Ask about destinations..."}
                 disabled={isLoading}
               />
               <Button onClick={handleSendMessage} disabled={isLoading}>

@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import placeholderImages from '@/lib/placeholder-images.json';
 import Link from 'next/link';
 import { Hotels } from '@/components/hotels';
+import { Chatbot } from '@/components/chatbot';
 
 async function getDestination(id: string): Promise<Destination | null> {
   const { firestore } = initializeFirebase();
@@ -141,13 +142,20 @@ export default async function DestinationDetailsPage({
                     </div>
                   </CardContent>
                 </Card>
-                 <Button className="w-full" size="lg">Plan My Trip</Button>
+                 <Button className="w-full" size="lg" asChild>
+                    <Link href="/itinerary">Plan My Trip</Link>
+                 </Button>
               </div>
             </div>
           </div>
-        section>
+        </section>
 
         {nearbyHotels.length > 0 && <Hotels hotels={nearbyHotels} />}
+        
+        <Chatbot
+          destinationContext={destination.name}
+          promptPlaceholder={`Ask about ${destination.name}...`}
+        />
 
       </main>
       <Footer />
