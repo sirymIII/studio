@@ -1,0 +1,94 @@
+@startuml Entity Relationship Diagram
+
+!define ENTITY_STYLE #FFF2CC
+!define RELATION_COLOR #666666
+
+skinparam rectangle {
+  backgroundColor ENTITY_STYLE
+  borderColor #black
+  shadowing false
+}
+
+entity "User" as User {
+  + userId (PK)
+  --
+  email
+  displayName
+  photoURL
+}
+
+entity "State" as State {
+  + stateId (PK)
+  --
+  name
+}
+
+entity "Destination" as Destination {
+  + destinationId (PK)
+  --
+  # stateId (FK)
+  name
+  description
+  type
+  cityTown
+  latitude
+  longitude
+  recommendedStayDays
+  popularityRank
+  createdBy (FK to User)
+}
+
+entity "Hotel" as Hotel {
+  + hotelId (PK)
+  --
+  # destinationId (FK)
+  # stateId (FK)
+  name
+  address
+  rating
+  priceAvg
+}
+
+entity "TransportOption" as TransportOption {
+  + transportOptionId (PK)
+  --
+  # destinationId (FK)
+  mode
+  provider
+  priceEstimate
+  durationMinutes
+}
+
+entity "DestinationMedia" as DestinationMedia {
+  + mediaId (PK)
+  --
+  # destinationId (FK)
+  photoURL
+}
+
+entity "ContactMessage" as ContactMessage {
+  + messageId (PK)
+  --
+  name
+  email
+  message
+  createdAt
+}
+
+entity "RoleAdmin" as RoleAdmin {
+  + userId (PK, FK to User)
+  --
+  (existence implies admin role)
+}
+
+
+' Relationships
+State "1" -- "N" Destination : has
+State "1" -- "N" Hotel : contains
+Destination "1" -- "N" Hotel : has
+Destination "1" -- "N" TransportOption : has
+Destination "1" -- "N" DestinationMedia : has
+User "1" -- "N" Destination : creates
+User "1" -- "1" RoleAdmin : can be
+
+@enduml

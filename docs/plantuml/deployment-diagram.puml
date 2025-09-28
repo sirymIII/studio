@@ -1,0 +1,61 @@
+@startuml Deployment Diagram
+
+!define NODE_BG_COLOR #DAE8FC
+!define ARTIFACT_BG_COLOR #FEF2E8
+!define FIREBASE_BG_COLOR #FFF0B3
+!define GENKIT_BG_COLOR #E8F5E9
+
+skinparam node {
+  backgroundColor NODE_BG_COLOR
+  borderColor #3366CC
+}
+skinparam artifact {
+  backgroundColor ARTIFACT_BG_COLOR
+  borderColor #D35400
+}
+
+
+node "Google Cloud" {
+  node "Firebase App Hosting" {
+    artifact "Next.js Application" as NextApp {
+      file "React Components" as React
+      file "Server Actions" as Actions
+    }
+  }
+
+  node "Genkit" as Genkit {
+    file "AI Flows (.ts)" as Flows
+    note right of Flows
+      - ai-itinerary-planner
+      - ai-route-planning
+      - hotel-search
+      - etc.
+    end note
+  }
+  
+  cloud "Firebase Services" as Firebase {
+    database "Firestore" as DB
+    storage "Authentication" as Auth
+  }
+
+  node "Google AI Platform" as AIPlatform {
+    component "Gemini Models" as Gemini
+  }
+}
+
+
+node "User's Browser" as Browser {
+  artifact "Web Browser"
+}
+
+Browser ..> NextApp : HTTP/S Requests
+NextApp --> React : Renders
+React --> Actions : Invokes
+Actions --> DB : Reads/Writes Data
+Actions -> Flows : Calls AI Flows
+Flows -> Gemini: Makes API Calls
+NextApp --> Auth : User Auth
+AIPlatform - Genkit
+
+
+@enduml

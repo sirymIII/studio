@@ -1,0 +1,44 @@
+@startuml Sequence Diagram - Hotel Booking
+
+title AI Hotel Booking Sequence
+
+actor User
+participant "Booking Page" as Page
+participant "hotelBookingAgent Flow" as Flow
+participant "Gemini AI Model" as Gemini
+participant "bookHotel Tool" as Tool
+
+User -> Page: Enters full name and email
+Page -> Flow: handleSendMessage(query)
+
+activate Flow
+Flow -> Gemini: ai.generate(prompt, tools=[bookHotel])
+note right: Prompt includes user query and chat history.
+
+activate Gemini
+Gemini -> Flow: Asks for more information (if needed)
+deactivate Gemini
+
+alt Information is complete
+    Gemini -> Flow: Requests to call 'bookHotel' tool with user details
+    Flow -> Tool: call.run()
+    activate Tool
+    Tool --> Flow: { success: true, confirmationId: '...' }
+    deactivate Tool
+    
+    Flow -> Gemini: ai.generate(prompt with tool results)
+    activate Gemini
+    Gemini -> Flow: "Congratulations! Your booking is confirmed."
+    deactivate Gemini
+    
+    Flow --> Page: { responseText: "...", bookingConfirmation: {...} }
+else Information is missing
+    Gemini -> Flow: "Please provide your full name."
+    Flow --> Page: { responseText: "Please provide your full name." }
+end
+
+deactivate Flow
+
+Page -> User: Displays response from AI agent
+
+@enduml

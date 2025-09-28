@@ -1,0 +1,32 @@
+@startuml Activity Diagram - Trip Planning
+title User Trip Planning Activity Diagram
+
+start
+:User visits TourNaija;
+if (Has an account?) then (yes)
+  :Logs in;
+else (no)
+  :Signs up for an account;
+endif
+:Navigates to "Recommendations" page;
+:Enters city, budget, and interests;
+:Receives AI-powered destination recommendations;
+:Selects a destination;
+:Views destination details;
+fork
+  :Searches for nearby hotels;
+  :Selects a hotel and initiates booking;
+  :Interacts with AI booking agent to provide details;
+  :Receives booking confirmation;
+fork again
+  :Opens AI Itinerary Planner;
+  :Provides destination, duration, and interests;
+  :Receives a detailed daily itinerary;
+fork again
+  :Uses AI Route Planner to find transport;
+  :Views transport options (bus, flight, etc.);
+end fork
+:User has a complete trip plan;
+stop
+
+@enduml

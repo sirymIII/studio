@@ -1,0 +1,23 @@
+@startuml Flowchart - AI Recommendations
+title Flowchart for AI Destination Recommendation
+
+start
+:User opens Recommendations page;
+:User enters Origin City;
+:User selects Budget (Low, Medium, High);
+:User selects Preferences (e.g., History, Nature);
+note right: Preferences are optional.
+
+:User clicks "Get Recommendations";
+:Frontend sends data to\n'personalizedDestinationRecommendations' flow;
+:Genkit flow receives input;
+:Flow calls Gemini AI Model with a prompt\ncontaining user's city, budget, and preferences;
+:AI model processes the request;
+:AI generates a list of 3 destination recommendations in JSON format;
+:The JSON object includes a summary sentence;
+:Flow returns JSON to the frontend;
+:Frontend parses the results;
+:Display "Your Personalized Recommendations" section;
+:For each recommendation, display a card with\nName, Description, Popularity, and a link;
+stop
+@enduml

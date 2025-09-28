@@ -1,0 +1,39 @@
+@startuml Use Case Diagram
+left to right direction
+
+actor "User" as User
+actor "Admin" as Admin
+
+Admin --|> User
+
+rectangle "TourNaija System" {
+  usecase "Manage Account" as UC_ManageAccount
+  usecase "View Destinations" as UC_ViewDestinations
+  usecase "View Hotels" as UC_ViewHotels
+  usecase "Use AI Chatbot" as UC_Chatbot
+  usecase "Get AI Recommendations" as UC_Recommend
+  usecase "Plan Itinerary with AI" as UC_Itinerary
+  usecase "Find Transport Routes" as UC_Transport
+  usecase "Book Hotel with AI Agent" as UC_BookHotel
+  usecase "Submit Contact Form" as UC_Contact
+
+  usecase "Manage Destinations" as UC_ManageDest
+  usecase "Manage Hotels" as UC_ManageHotels
+  usecase "View Dashboard" as UC_Dashboard
+}
+
+User -- UC_ManageAccount
+User -- UC_ViewDestinations
+User -- UC_ViewHotels
+User -- UC_Chatbot
+User -- UC_Recommend
+User -- UC_Itinerary
+User -- UC_Transport
+User -- UC_BookHotel
+User -- UC_Contact
+
+Admin -- UC_ManageDest
+Admin -- UC_ManageHotels
+Admin -- UC_Dashboard
+
+@enduml
