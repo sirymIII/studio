@@ -46,7 +46,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[60vh] min-h-[400px] w-full">
+        <section className="relative h-[60vh] w-full min-h-[400px]">
           {heroImage && (
             <Image
               src={heroImage.imageUrl}
@@ -57,8 +57,7 @@ export default function Home() {
               priority
             />
           )}
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/50 text-center text-white">
             <h1 className="font-headline text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
               Discover Nigeria's Hidden Gems
             </h1>
