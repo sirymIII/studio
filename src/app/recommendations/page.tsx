@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -84,8 +83,7 @@ export default function RecommendationsPage() {
         <section id="recommendations" className="py-16 md:py-24">
           <div className="container mx-auto px-4">
             <Card className="bg-muted">
-              <div className="grid items-center gap-8 md:grid-cols-2">
-                <div className="p-8 md:p-12">
+              <div className="p-8 md:p-12">
                   <h2 className="font-headline text-3xl font-bold md:text-4xl">
                     Find Your Perfect Getaway
                   </h2>
@@ -179,16 +177,6 @@ export default function RecommendationsPage() {
                     </Button>
                   </form>
                 </div>
-                <div className="relative hidden h-full min-h-[300px] w-full overflow-hidden rounded-r-lg md:block">
-                  <Image
-                    src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop"
-                    alt="Map of Nigeria"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="nigeria map"
-                  />
-                </div>
-              </div>
             </Card>
           </div>
         </section>

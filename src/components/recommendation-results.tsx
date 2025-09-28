@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Star, Calendar } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export function RecommendationResults({
@@ -34,15 +33,6 @@ export function RecommendationResults({
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {results.recommendations.map((rec, index) => (
             <Card key={index} className="flex flex-col overflow-hidden group">
-              <div className="relative h-48 w-full">
-                <Image
-                  src={`https://picsum.photos/seed/${rec.latitude}/600/400`}
-                  alt={rec.destinationName}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  data-ai-hint={`${rec.type} landscape`}
-                />
-              </div>
               <CardHeader>
                 <CardTitle>{rec.destinationName}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
