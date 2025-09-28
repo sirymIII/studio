@@ -18,7 +18,7 @@ import {z} from 'genkit';
 const PersonalizedDestinationRecommendationsInputSchema = z.object({
   city: z.string().describe('The user\'s city of origin.'),
   budget: z.string().describe('The user\'s budget for the trip (e.g., \'low\', \'medium\', \'high\').'),
-  preferences: z.array(z.string()).describe('A list of user interests (e.g., \'historical sites\', \'natural beauty\', \'cultural experiences\').'),
+  preferences: z.array(z.string()).optional().describe('A list of user interests (e.g., \'historical sites\', \'natural beauty\', \'cultural experiences\').'),
 });
 
 export type PersonalizedDestinationRecommendationsInput = z.infer<typeof PersonalizedDestinationRecommendationsInputSchema>;
@@ -57,7 +57,7 @@ const personalizedDestinationRecommendationsPrompt = ai.definePrompt({
   model: 'googleai/gemini-2.5-flash',
   prompt: `You are an expert AI travel assistant for TourNaija, specializing in crafting exciting and personalized travel recommendations for tourism in Nigeria.
 
-  Based on the user's city of origin, budget, and interests, provide a list of 3 diverse and compelling destination recommendations.
+  Based on the user's city of origin, budget, and interests, provide a list of 3 diverse and compelling destination recommendations. If no interests are provided, suggest a variety of popular destinations.
   
   Your recommendations should feel like they are from a knowledgeable and enthusiastic tour guide. The description for each place should be engaging and highlight what makes it special.
   
@@ -65,7 +65,7 @@ const personalizedDestinationRecommendationsPrompt = ai.definePrompt({
 
   User's City: {{{city}}}
   User's Budget: {{{budget}}}
-  User's Interests: {{#each preferences}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+  User's Interests: {{#if preferences}}{{#each preferences}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}None specified{{/if}}
 
   The final output MUST be a valid JSON object.
   - Each destination must include: destinationName, state, type, description, cityTown, latitude, longitude, recommendedStayDays, and a popularityRank (1-10).

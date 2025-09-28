@@ -47,10 +47,10 @@ export default function RecommendationsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!city || !budget || preferences.length === 0) {
+    if (!city || !budget) {
       toast({
         title: 'Missing Information',
-        description: 'Please fill out all fields to get recommendations.',
+        description: 'Please provide your city and budget to get recommendations.',
         variant: 'destructive',
       });
       return;
@@ -123,7 +123,7 @@ export default function RecommendationsPage() {
                         </Select>
                       </div>
                       <div className="space-y-1">
-                        <label htmlFor="interests">Interests</label>
+                        <label htmlFor="interests">Interests (Optional)</label>
                          <Select onValueChange={handlePreferenceChange} value="" disabled={isLoading}>
                           <SelectTrigger id="interests">
                             <SelectValue placeholder="Select interests" />
