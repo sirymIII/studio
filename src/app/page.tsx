@@ -1,4 +1,3 @@
-
 'use client';
 import Image from 'next/image';
 import {
@@ -46,7 +45,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[60vh] w-full min-h-[400px]">
+        <section className="relative h-[60vh] min-h-[400px] w-full">
           {heroImage && (
             <Image
               src={heroImage.imageUrl}
