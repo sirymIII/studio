@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -38,23 +39,26 @@ export default function DestinationsPage() {
                   </CardContent>
                 </Card>
               ))}
-              {featuredDestinations?.map((dest) => {
+              {!isLoading && featuredDestinations?.map((dest) => {
+                // Find image from placeholder data, fall back to a default if not found
                 const img = placeholderImages.placeholderImages.find(
-                  (p) => p.id === dest.image.id
-                );
+                  (p) => p.id === dest.image?.id
+                ) || { 
+                  imageUrl: `https://picsum.photos/seed/${dest.id}/600/400`, 
+                  imageHint: `${dest.type} landscape`
+                };
+                
                 return (
                    <Link key={dest.id} href={`/destinations/${dest.id}`} className="group">
                     <Card className="overflow-hidden h-full">
                       <div className="relative h-48 w-full">
-                        {img && (
-                          <Image
-                            src={img.imageUrl}
-                            alt={dest.name}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            data-ai-hint={img.imageHint}
-                          />
-                        )}
+                        <Image
+                          src={img.imageUrl}
+                          alt={dest.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          data-ai-hint={img.imageHint}
+                        />
                       </div>
                       <CardContent className="p-4">
                         <h3 className="font-headline text-lg font-bold">
@@ -69,6 +73,11 @@ export default function DestinationsPage() {
                 );
               })}
             </div>
+            {!isLoading && (!featuredDestinations || featuredDestinations.length === 0) && (
+              <div className="text-center text-muted-foreground col-span-full">
+                <p>No destinations found. Please check back later.</p>
+              </div>
+            )}
           </div>
         </section>
       </main>
