@@ -19,11 +19,13 @@ interface Message {
   isConfirmation?: boolean;
 }
 
+// The page parameter is now 'hotelName' instead of 'hotelId'
 export default function BookHotelPage({ params }: { params: { hotelId: string } }) {
-  const { hotelId } = params;
+  // Decode the hotel name from the URL
+  const hotelName = decodeURIComponent(params.hotelId);
   const [messages, setMessages] = useState<Message[]>([
     {
-        text: `Hello! I can help you book hotel ${hotelId}. What is your full name and email address?`,
+        text: `Hello! I can help you book a room at ${hotelName}. What is your full name and email address?`,
         isUser: false,
     }
   ]);
@@ -41,7 +43,7 @@ export default function BookHotelPage({ params }: { params: { hotelId: string } 
 
     try {
       const result = await hotelBookingAgent({
-        hotelId: hotelId,
+        hotelName: hotelName,
         query: input,
         chatHistory: messages.map(m => `${m.isUser ? 'User' : 'Assistant'}: ${m.text}`).join('\n')
       });
@@ -79,7 +81,7 @@ export default function BookHotelPage({ params }: { params: { hotelId: string } 
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">Book Hotel</CardTitle>
-              <CardDescription>Complete your booking for Hotel ID: {hotelId}</CardDescription>
+              <CardDescription>Complete your booking for: {hotelName}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-96 overflow-y-auto pr-4 space-y-4 mb-4 border rounded-lg p-4">

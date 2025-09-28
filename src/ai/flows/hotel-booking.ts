@@ -18,7 +18,7 @@ const GuestDetailsSchema = z.object({
 });
 
 const HotelBookingToolInputSchema = z.object({
-  hotelId: z.string().describe('The ID of the hotel to book.'),
+  hotelName: z.string().describe('The name of the hotel to book.'),
   guestDetails: GuestDetailsSchema,
 });
 
@@ -34,14 +34,14 @@ const HotelBookingToolOutputSchema = z.object({
 const bookHotel = ai.defineTool(
   {
     name: 'bookHotel',
-    description: 'Books a hotel for the given hotel ID and guest details.',
+    description: 'Books a hotel for the given hotel name and guest details.',
     inputSchema: HotelBookingToolInputSchema,
     outputSchema: HotelBookingToolOutputSchema,
   },
   async (input) => {
     console.log('Simulating hotel booking with input:', input);
     // In a real implementation, you would call an external booking API here.
-    if (input.hotelId && input.guestDetails.fullName && input.guestDetails.email) {
+    if (input.hotelName && input.guestDetails.fullName && input.guestDetails.email) {
       // Simulate a successful booking
       return {
         success: true,
@@ -59,7 +59,7 @@ const bookHotel = ai.defineTool(
 
 
 export const HotelBookingInputSchema = z.object({
-  hotelId: z.string().describe('The ID of the hotel to be booked.'),
+  hotelName: z.string().describe('The name of the hotel to be booked.'),
   query: z.string().describe("The user's natural language query for booking the hotel."),
   chatHistory: z.string().describe("The history of the conversation so far.").optional(),
 });
@@ -76,11 +76,11 @@ export async function hotelBookingAgent(input: HotelBookingInput): Promise<Hotel
   const llmResponse = await ai.generate({
     prompt: `You are a hotel booking assistant for TourNaija.
 
-    Your goal is to help the user book the hotel with ID: ${input.hotelId}.
+    Your goal is to help the user book the hotel named: ${input.hotelName}.
 
     - You have one tool: \`bookHotel\`.
     - To call the tool, you need the user's full name and email address.
-    - If the user provides the necessary information, call the \`bookHotel\` tool with the hotelId and the collected guest details.
+    - If the user provides the necessary information, call the \`bookHotel\` tool with the hotelName and the collected guest details.
     - If any information is missing, you MUST ask the user for it clearly. Do not make up details.
     - Once you have called the tool, summarize the result for the user.
     - Be friendly and conversational.
