@@ -33,6 +33,7 @@ import { Hotels } from '@/components/hotels';
 import Link from 'next/link';
 import { useHotels } from '@/services/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Chatbot } from '@/components/chatbot';
 
 export default function Home() {
   const heroImage = placeholderImages.placeholderImages.find(
@@ -172,6 +173,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <Chatbot />
 
       </main>
       <Footer />
