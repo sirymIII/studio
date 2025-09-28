@@ -18,7 +18,7 @@ import {z} from 'genkit';
 const PersonalizedDestinationRecommendationsInputSchema = z.object({
   city: z.string().describe('The user\'s city of origin.'),
   budget: z.string().describe('The user\'s budget for the trip (e.g., \'low\', \'medium\', \'high\').'),
-  preferences: z.string().describe('The user\'s interests (e.g., \'historical sites\', \'natural beauty\', \'cultural experiences\').'),
+  preferences: z.array(z.string()).describe('A list of user interests (e.g., \'historical sites\', \'natural beauty\', \'cultural experiences\').'),
 });
 
 export type PersonalizedDestinationRecommendationsInput = z.infer<typeof PersonalizedDestinationRecommendationsInputSchema>;
@@ -66,7 +66,7 @@ const personalizedDestinationRecommendationsPrompt = ai.definePrompt({
 
   User's City: {{{city}}}
   User's Budget: {{{budget}}}
-  User's Interests: {{{preferences}}}
+  User's Interests: {{#each preferences}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
   Ensure that the recommendations are diverse and cover different regions and types of attractions in Nigeria.
   `, 

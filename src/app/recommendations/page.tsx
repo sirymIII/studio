@@ -21,19 +21,33 @@ import {
 import { RecommendationResults } from '@/components/recommendation-results';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 
 export default function RecommendationsPage() {
   const [city, setCity] = useState('');
   const [budget, setBudget] = useState('');
-  const [preferences, setPreferences] = useState('');
+  const [preferences, setPreferences] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] =
     useState<PersonalizedDestinationRecommendationsOutput | null>(null);
   const { toast } = useToast();
 
+  const handlePreferenceChange = (value: string) => {
+    setPreferences(prev =>
+      prev.includes(value)
+        ? prev.filter(i => i !== value)
+        : [...prev, value]
+    );
+  };
+
+  const removePreference = (preferenceToRemove: string) => {
+    setPreferences(prev => prev.filter(p => p !== preferenceToRemove));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!city || !budget || !preferences) {
+    if (!city || !budget || preferences.length === 0) {
       toast({
         title: 'Missing Information',
         description: 'Please fill out all fields to get recommendations.',
@@ -110,11 +124,7 @@ export default function RecommendationsPage() {
                       </div>
                       <div className="space-y-1">
                         <label htmlFor="interests">Interests</label>
-                        <Select
-                          onValueChange={setPreferences}
-                          value={preferences}
-                          disabled={isLoading}
-                        >
+                         <Select onValueChange={handlePreferenceChange} value="" disabled={isLoading}>
                           <SelectTrigger id="interests">
                             <SelectValue placeholder="Select interests" />
                           </SelectTrigger>
@@ -138,6 +148,24 @@ export default function RecommendationsPage() {
                         </Select>
                       </div>
                     </div>
+
+                    {preferences.length > 0 && (
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {preferences.map(preference => (
+                          <Badge key={preference} variant="secondary" className="pl-3 pr-1">
+                            {preference}
+                            <button
+                              onClick={() => removePreference(preference)}
+                              className="ml-1 rounded-full hover:bg-black/10 p-0.5"
+                              disabled={isLoading}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+
                     <Button
                       type="submit"
                       className="w-full sm:w-auto"
