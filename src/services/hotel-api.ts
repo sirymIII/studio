@@ -68,13 +68,19 @@ export async function fetchHotelsFromApi(city: string): Promise<z.infer<typeof H
       const vendors: z.infer<typeof VendorPriceSchema>[] = [];
       vendorArray.forEach(vendorObj => {
         const keys = Object.keys(vendorObj);
-        const priceKeys = keys.filter(k => k.startsWith('price'));
+        // Find all price keys (e.g., "Price1", "Price2")
+        const priceKeys = keys.filter(k => k.startsWith('Price'));
+        
         priceKeys.forEach(priceKey => {
+            // Extract the number from the key (e.g., "1" from "Price1")
             const index = priceKey.substring(5);
+            const vendorKey = `Vendor${index}`;
+            const taxKey = `Tax${index}`;
+
             vendors.push({
                 price: vendorObj[priceKey] ? parseFloat(vendorObj[priceKey]) : null,
-                tax: vendorObj[`tax${index}`] ? parseFloat(vendorObj[`tax${index}`]) : null,
-                vendor: vendorObj[`vendor${index}`] || null,
+                tax: vendorObj[taxKey] ? parseFloat(vendorObj[taxKey]) : null,
+                vendor: vendorObj[vendorKey] || null,
             });
         });
       });
