@@ -1,43 +1,14 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useEffect, useState } from 'react';
+import { BodyClassManager } from '@/components/body-class-manager';
 
 export const metadata: Metadata = {
   title: 'TourNaija - Discover Nigeria',
   description: 'Your AI-powered guide to tourism in Nigeria.',
 };
-
-/**
- * A client component that safely applies a class to the body tag
- * only after the initial render to avoid hydration mismatches.
- */
-function BodyClassManager() {
-  'use client';
-  const isMobile = useIsMobile();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
-      if (isMobile) {
-        document.body.classList.add('mobile_mode');
-      } else {
-        document.body.classList.remove('mobile_mode');
-      }
-    }
-  }, [isMobile, isMounted]);
-
-  // This component doesn't render anything itself.
-  return null;
-}
 
 
 export default function RootLayout({
