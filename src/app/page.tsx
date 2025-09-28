@@ -1,12 +1,6 @@
 'use client';
 import Image from 'next/image';
-import {
-  Heart,
-  Route,
-  Sparkles,
-  Search,
-  ChevronDown,
-} from 'lucide-react';
+import { Heart, Route, Sparkles, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,17 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-
-import placeholderImages from '@/lib/placeholder-images.json';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Hotels } from '@/components/hotels';
@@ -36,27 +19,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Chatbot } from '@/components/chatbot';
 
 export default function Home() {
-  const heroImage = placeholderImages.placeholderImages.find(
-    (img) => img.id === 'hero-background'
-  );
   const { data: hotels, isLoading } = useHotels();
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <section className="relative h-[60vh] min-h-[400px] w-full">
-          {heroImage && (
-            <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
-              fill
-              className="object-cover"
-              data-ai-hint={heroImage.imageHint}
-              priority
-            />
-          )}
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/50 text-center text-white">
+        <section className="bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 h-[50vh] min-h-[350px] flex flex-col items-center justify-center text-center">
             <h1 className="font-headline text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
               Discover Nigeria's Hidden Gems
             </h1>
@@ -64,7 +34,7 @@ export default function Home() {
               Your AI-powered guide to the unforgettable landscapes, cultures,
               and adventures across Nigeria.
             </p>
-            <Button size="lg" className="mt-8" asChild>
+            <Button size="lg" className="mt-8" variant="secondary" asChild>
               <Link href="/destinations">Explore Destinations</Link>
             </Button>
           </div>
