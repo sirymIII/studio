@@ -104,7 +104,7 @@ export default function RecommendationsPage() {
                         disabled={isLoading}
                       />
                     </div>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 items-end">
                       <div className="space-y-1">
                         <label htmlFor="budget">Budget</label>
                         <Select
