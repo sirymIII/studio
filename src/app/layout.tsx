@@ -7,7 +7,6 @@ import { FirebaseClientProvider } from '@/firebase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 
-// The metadata is still handled by Next.js at build time and on the server.
 export const metadata: Metadata = {
   title: 'TourNaija - Discover Nigeria',
   description: 'Your AI-powered guide to tourism in Nigeria.',
