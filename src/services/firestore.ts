@@ -1,57 +1,17 @@
 
 'use client';
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, getDocs, writeBatch, getCountFromServer } from 'firebase/firestore';
-import { useEffect, useState, useRef } from 'react';
+import { collection, doc, getCountFromServer } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import type { Destination, Hotel, UserProfile } from '@/lib/types';
-import { destinationSeedData } from '@/data/destinations';
 import { getUserCount } from '@/app/admin/actions';
-
-/**
- * Seeds the destinations collection in Firestore if it's empty.
- * This is a one-time operation.
- */
-async function seedDestinations(firestore: any) {
-  const destinationsCol = collection(firestore, 'destinations');
-  const snapshot = await getDocs(destinationsCol);
-
-  if (snapshot.empty) {
-    console.log('Destinations collection is empty. Seeding data...');
-    const batch = writeBatch(firestore);
-    destinationSeedData.forEach((destData) => {
-      const docRef = doc(destinationsCol); // Create a new doc with a generated ID
-      batch.set(docRef, destData);
-    });
-    await batch.commit();
-    console.log('Destinations data seeded successfully.');
-    return true; // Indicate that seeding happened and a refresh is needed.
-  }
-  return false;
-}
 
 
 export function useDestinations() {
   const firestore = useFirestore();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const seedingRef = useRef(false);
-
-  // Perform a one-time check to seed the database if necessary.
-  useEffect(() => {
-    if (firestore && !seedingRef.current) {
-      seedingRef.current = true; // Prevents re-running
-      seedDestinations(firestore).then((wasSeeded) => {
-        if (wasSeeded) {
-          // Force a re-fetch of the collection data after seeding.
-          setRefreshKey(prev => prev + 1);
-        }
-      });
-    }
-  }, [firestore]);
-
-
   const destinationsQuery = useMemoFirebase(
     () => (firestore ? collection(firestore, 'destinations') : null),
-    [firestore, refreshKey] // Depend on refreshKey to re-create the query
+    [firestore]
   );
   return useCollection<Destination>(destinationsQuery);
 }
