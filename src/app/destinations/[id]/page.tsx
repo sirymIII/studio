@@ -151,12 +151,11 @@ export default async function DestinationDetailsPage({
         </section>
 
         {nearbyHotels.length > 0 && <Hotels hotels={nearbyHotels} />}
-        
+
         <Chatbot
           destinationContext={destination.name}
           promptPlaceholder={`Ask about ${destination.name}...`}
         />
-
       </main>
       <Footer />
     </div>
