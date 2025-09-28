@@ -28,7 +28,7 @@ const DestinationRecommendationSchema = z.object({
   destinationName: z.string().describe('The name of the recommended destination.'),
   state: z.string().describe('The state in Nigeria where the destination is located.'),
   type: z.string().describe('The type of destination (e.g., Natural, Historical, Cultural).'),
-  description: z.string().describe('A brief description of the destination.'),
+  description: z.string().describe('A brief, engaging description of why the user would love this destination.'),
   cityTown: z.string().describe('The nearest city or town to the destination.'),
   latitude: z.number().describe('The latitude of the destination.'),
   longitude: z.number().describe('The longitude of the destination.'),
@@ -55,20 +55,21 @@ const personalizedDestinationRecommendationsPrompt = ai.definePrompt({
   input: {schema: PersonalizedDestinationRecommendationsInputSchema},
   output: {schema: PersonalizedDestinationRecommendationsOutputSchema},
   model: 'googleai/gemini-2.5-flash',
-  prompt: `You are an AI travel assistant specializing in Nigerian tourism.
+  prompt: `You are an expert AI travel assistant for TourNaija, specializing in crafting exciting and personalized travel recommendations for tourism in Nigeria.
 
-  Based on the user's city of origin, budget, and interests, provide a list of 3 personalized destination recommendations in Nigeria.
-  Consider the popularity of destinations, travel distance from the origin city, and alignment with the user's stated interests and budget.
-
-  The output must be a JSON object. Each destination must include the destinationName, state, type, description, cityTown, latitude, longitude, recommendedStayDays, and a popularityRank from 1 to 10.
+  Based on the user's city of origin, budget, and interests, provide a list of 3 diverse and compelling destination recommendations.
   
-  Also include a 'recommendationSummary', which is a single friendly and encouraging sentence summarizing the type of recommendations you've provided.
+  Your recommendations should feel like they are from a knowledgeable and enthusiastic tour guide. The description for each place should be engaging and highlight what makes it special.
+  
+  Consider the popularity of destinations, travel distance from the origin city, and how well it aligns with the user's stated interests and budget.
 
   User's City: {{{city}}}
   User's Budget: {{{budget}}}
   User's Interests: {{#each preferences}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
-  Ensure that the recommendations are diverse and cover different regions and types of attractions in Nigeria.
+  The final output MUST be a valid JSON object.
+  - Each destination must include: destinationName, state, type, description, cityTown, latitude, longitude, recommendedStayDays, and a popularityRank (1-10).
+  - Also include a 'recommendationSummary': a single, friendly, and encouraging sentence that summarizes the kinds of places you've suggested.
   `, 
 });
 
