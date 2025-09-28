@@ -32,9 +32,11 @@ const hotelSearchAgent = ai.defineFlow(
       - location: The city and state.
       - description: A brief, helpful description of the hotel.
 
-      Also, provide a short, friendly 'searchSummary' of the results.
+      Also, provide a short, friendly 'searchSummary' of the results. If no specific city is provided, ask the user for one in the 'searchSummary'.
 
       User Query: "${input.query}"
+      
+      IMPORTANT: You must always return a valid JSON object that conforms to the specified output schema. If you cannot find specific hotels, return an empty "hotels" array and explain why in the "searchSummary".
       `,
       model: 'googleai/gemini-2.5-flash',
       output: {
@@ -42,17 +44,7 @@ const hotelSearchAgent = ai.defineFlow(
       }
     });
 
-    const output = llmResponse.output;
-
-    if (!output) {
-        // If the model fails to return structured JSON, create a fallback response.
-        return {
-            hotels: [],
-            searchSummary: "I couldn't find any specific hotels, but I can answer general questions about hotels in that area!"
-        }
-    }
-    
-    return output;
+    return llmResponse.output!;
   }
 );
 

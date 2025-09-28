@@ -47,7 +47,7 @@ export function HotelSearchResults({ results }: { results: HotelSearchOutput }) 
             ))}
           </div>
         ) : (
-          !results.searchSummary.toLowerCase().includes("ask for the city") && (
+          !results.searchSummary.toLowerCase().includes("which city") && (
             <div className="text-center text-muted-foreground">
                 <p>No hotels found for your search criteria. Try being more specific!</p>
             </div>
