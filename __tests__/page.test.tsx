@@ -1,14 +1,14 @@
 
-import '@testing-library/jest-dom'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Home from '@/app/page'
 
-// Mock the services and components that cause issues in a JEST environment
-jest.mock('@/services/firestore', () => ({
-  useHotels: jest.fn(() => ({ data: [], isLoading: false })),
+// Mock the services and components that cause issues in a JSDOM environment
+vi.mock('@/services/firestore', () => ({
+  useHotels: vi.fn(() => ({ data: [], isLoading: false })),
 }));
 
-jest.mock('@/components/chatbot', () => ({
+vi.mock('@/components/chatbot', () => ({
   Chatbot: () => <div>Chatbot Mock</div>,
 }));
 
