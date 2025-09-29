@@ -10,14 +10,10 @@ import { initializeFirebase } from '@/firebase/server';
 export async function getUserCount(): Promise<number> {
   try {
     const { auth } = await initializeFirebase();
-    // listUsers() retrieves a page of users. We can check the total number of users
-    // by fetching the first page and looking at the total number of users.
-    // For performance, we fetch only 1 user.
-    const userRecords = await auth.listUsers(1);
-    // The total number of users is available on the result object.
-    // However, listUsers() returns all users, including anonymous ones.
-    // A more accurate count for "registered" users might filter by provider type,
-    // but for now, we'll count all of them.
+    // listUsers() retrieves a page of users. We can get the total count
+    // by fetching all users. We can set a limit up to 1000.
+    const userRecords = await auth.listUsers(1000);
+    // The total number of users is the length of the users array.
     return userRecords.users.length;
   } catch (error) {
     console.error('Error fetching user count:', error);

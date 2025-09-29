@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { getUserCount } from '@/app/admin/actions';
-import { initializeFirebase } from '@/firebase/server';
 
 // Since initializeFirebase is mocked in setup, we can grab it to check its return value
 const mockedFirebase = await vi.importMock('@/firebase/server');
@@ -13,9 +12,11 @@ describe('Admin Server Actions', () => {
   });
 
   it('getUserCount should return the total number of users', async () => {
-    // Arrange: Mock the return value for listUsers
+    // Arrange: Mock the return value for listUsers.
+    // The real implementation gets the count from the length of the users array.
     auth.listUsers.mockResolvedValue({
       users: new Array(15), // Simulate 15 user records
+      // The total number isn't on a `total` property, it's the length of the array
     });
 
     // Act: Call the server action
@@ -23,7 +24,7 @@ describe('Admin Server Actions', () => {
 
     // Assert: Check if the count is correct
     expect(count).toBe(15);
-    expect(auth.listUsers).toHaveBeenCalledWith(1); // We only fetch 1 user to get the total count
+    expect(auth.listUsers).toHaveBeenCalledWith(1000); // Check if it was called to get all users
   });
 
   it('getUserCount should return 0 if there is an error', async () => {
